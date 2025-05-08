@@ -1,0 +1,182 @@
+//
+//  more.js
+//
+//  Created by Armored Dragon on 5 May 2025.
+//  Copyright 2025 Overte e.V contributors.
+//
+//  ---
+//
+//  Distributed under the Apache License, Version 2.0.
+//  See the accompanying file LICENSE or http://www.apache.org/licenses/LICENSE-2.0.html
+//
+
+const { app } = Script.require("./lib/app.js");
+const format = Script.require("./lib/format.js");
+const io = Script.require("./lib/io.js");
+// const { repos } = Script.require("./lib/repos.js");
+// const { util } = Script.require("./lib/util.js");
+
+Script.scriptEnding.connect(appShuttingDown);
+
+app.add();
+
+function appShuttingDown() {
+	console.log("Shutting down more.js application");
+	app.remove();
+}
+
+function onMessageFromQML(event) {
+	switch (event.type) {
+		case ("addNewRepositoryButtonClicked"):
+			let newRepositoryUrl = Window.prompt("Enter the URL of the repository metadata.json file.", "");
+			repos.installRepository(newRepositoryUrl);
+			break;
+	}
+}
+
+function sendMessageToQML(message) {
+
+}
+
+function sendAppListToQML() {
+	// Get the app list
+	// Format the app list (make sure it is valid)
+	// Send the app list
+}
+
+function installApplication(appUrl) {
+	// Install app to interface
+	// Save app using app settings
+	// Update interface app detail page
+	// Update interface app list page
+}
+
+function uninstallApplication(appUrl) {
+	// Uninstall app from interface.
+	// Remove app using app settings for data storage.
+	// Update interface app detail page
+	// Update interface app list page
+}
+
+function debugLog(content) {
+	if (typeof content === "object") content = JSON.stringify(content, null, 4);
+
+	console.log(`[ Debug ] ${content}`);
+}
+
+let repos = {
+	maxVersion: 2,
+	repositories: [],
+	applications: [],
+	fetchRepositories: () => { },
+	fetchRepositoryContent: async (url) => {
+		let repositoryContent = await util.request(url);
+		return repositoryContent;
+	},
+	installRepository: async (url) => {
+		// TODO: Extract valid URL. (trim)
+		debugLog(`Installing repository: ${url}`);
+		let repositoryContent = await repos.fetchRepositoryContent(url);
+		repositoryContent = util.toJSON(repositoryContent);
+		if (!repositoryContent) {
+			debugLog(`Repository does not contain valid JSON.`);
+			return null;
+		}
+
+		if (repos.isRepositoryValid(repositoryContent) === false) {
+			debugLog(`Repository is not valid.`);
+			return null;
+		}
+
+		repos.repositories.push(url);
+
+		Settings.setValue('overte.more.repositories', repos.repositories);
+
+		let formattedArrayOfApplicationsFromRepository = repositoryContent.application_list.map((applicationEntry, index) => {
+			return {
+				...applicationEntry,
+				appRepositoryName: repositoryContent.title,
+				appRepositoryUrl: repositoryContent.base_url,
+			}
+		})
+
+		formattedArrayOfApplicationsFromRepository.forEach((entry) => repos.applications.push(entry))
+
+		// debugLog(repos.applications);
+		// Reload UI
+	},
+	removeRepository: (url) => {
+		// Check if we have the repository in settings
+		// Remove from settings
+		// Remove apps from repo from displayed apps
+
+	},
+	isRepositoryValid: (repositoryObject) => {
+		if (!repositoryObject.VERSION || repositoryObject.VERSION > repos.maxVersion) return false;
+		if (!repositoryObject.title) return false;
+		if (!repositoryObject.base_url) return false;
+		if (!repositoryObject.application_list) return false;
+
+		return true;
+	}
+}
+
+let util = {
+	toJSON: (input) => {
+		if (!input) {
+			// Nothing.
+			return null;
+		}
+
+		if (typeof input === "object") {
+			// Already JSON.
+			return input;
+		}
+
+		try {
+			// Convert to JSON.
+			let inputJSON = JSON.parse(input);
+			return inputJSON;
+		}
+		catch (error) {
+			// Failed to convert to JSON, fail gracefully.
+			console.log(`Error parsing ${input} to JSON.`)
+			return null;
+		}
+	},
+	request: (url, method = "GET") => {
+		return new Promise((resolve) => {
+			debugLog(`Making "${method}" request to "${url}"`);
+			if (util.isValidUrl(url) === false) return resolve(null);
+
+			let req = new XMLHttpRequest();
+
+			req.onreadystatechange = function () {
+				if (req.readyState === req.DONE) {
+					if (req.status === 200) {
+						resolve(req.responseText);
+					}
+					else {
+						debugLog("Error", req.status, req.statusText);
+						return resolve(null);
+					}
+				}
+			};
+
+			req.open(method, url);
+			req.send();
+		})
+	},
+	isValidUrl: (string) => {
+		const urlRegex = /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/g;
+
+		const doesStringHaveUrl = urlRegex.test(string);
+		if (doesStringHaveUrl === false) return false;
+
+		const urlFromString = string.match(urlRegex)[0];
+
+		const isHttpProtocol = urlFromString.substring(0, 4) === "http";
+
+		return isHttpProtocol;
+	}
+}
