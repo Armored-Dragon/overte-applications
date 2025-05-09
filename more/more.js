@@ -74,10 +74,18 @@ let repos = {
 		return repositoryContent;
 	},
 	installRepository: async (url) => {
-		// TODO: Extract valid URL. (trim)
 		debugLog(`Installing repository: ${url}`);
+
+		url = util.extractUrlFromString(url);
+
+		if (repos.doWeHaveThisRepositorySaved(url)) {
+			debugLog(`Repository is already saved.`);
+			return null;
+		}
+
 		let repositoryContent = await repos.fetchRepositoryContent(url);
 		repositoryContent = util.toJSON(repositoryContent);
+
 		if (!repositoryContent) {
 			debugLog(`Repository does not contain valid JSON.`);
 			return null;
@@ -100,7 +108,7 @@ let repos = {
 			}
 		})
 
-		formattedArrayOfApplicationsFromRepository.forEach((entry) => repos.applications.push(entry))
+		formattedArrayOfApplicationsFromRepository.forEach((entry) => repos.applications.push(entry));
 
 		// debugLog(repos.applications);
 		// Reload UI
@@ -118,6 +126,9 @@ let repos = {
 		if (!repositoryObject.application_list) return false;
 
 		return true;
+	},
+	doWeHaveThisRepositorySaved: (url) => {
+		return repos.repositories.indexOf(url) > -1;
 	}
 }
 
@@ -154,6 +165,7 @@ let util = {
 			req.onreadystatechange = function () {
 				if (req.readyState === req.DONE) {
 					if (req.status === 200) {
+						debugLog(`${method} request to ${url} succeeded.`)
 						resolve(req.responseText);
 					}
 					else {
@@ -168,15 +180,27 @@ let util = {
 		})
 	},
 	isValidUrl: (string) => {
-		const urlRegex = /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/g;
-
-		const doesStringHaveUrl = urlRegex.test(string);
-		if (doesStringHaveUrl === false) return false;
-
-		const urlFromString = string.match(urlRegex)[0];
+		const urlFromString = util.extractUrlFromString(string);
+		if (!urlFromString) return false;
 
 		const isHttpProtocol = urlFromString.substring(0, 4) === "http";
 
 		return isHttpProtocol;
+	},
+	extractUrlFromString: (string) => {
+		if (!string) {
+			debugLog(`String is null. Can not extract URL.`)
+			return;
+		}
+
+		string = string.trim();
+
+		const urlRegex = /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/g;
+		const doesStringHaveUrl = urlRegex.test(string);
+		if (doesStringHaveUrl === false) return null;
+
+		const urlFromString = string.match(urlRegex)[0];
+
+		return urlFromString;
 	}
 }
