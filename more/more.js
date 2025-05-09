@@ -16,6 +16,9 @@ const io = Script.require("./lib/io.js");
 // const { repos } = Script.require("./lib/repos.js");
 // const { util } = Script.require("./lib/util.js");
 
+const settingsRepositoryListName = "overte.more.repositories";
+const settingsAppListName = "overte.more.app";
+
 Script.scriptEnding.connect(appShuttingDown);
 
 app.add();
@@ -36,12 +39,6 @@ function onMessageFromQML(event) {
 
 function sendMessageToQML(message) {
 
-}
-
-function sendAppListToQML() {
-	// Get the app list
-	// Format the app list (make sure it is valid)
-	// Send the app list
 }
 
 function installApplication(appUrl) {
@@ -98,7 +95,7 @@ let repos = {
 
 		repos.repositories.push(url);
 
-		Settings.setValue('overte.more.repositories', repos.repositories);
+		Settings.setValue(settingsRepositoryListName, repos.repositories);
 
 		let formattedArrayOfApplicationsFromRepository = repositoryContent.application_list.map((applicationEntry, index) => {
 			return {
@@ -106,12 +103,12 @@ let repos = {
 				appRepositoryName: repositoryContent.title,
 				appRepositoryUrl: repositoryContent.base_url,
 			}
-		})
+		});
 
 		formattedArrayOfApplicationsFromRepository.forEach((entry) => repos.applications.push(entry));
 
-		// debugLog(repos.applications);
-		// Reload UI
+		debugLog(repos.applications);
+		ui.sendAppListToQML(repos.applications);
 	},
 	removeRepository: (url) => {
 		// Check if we have the repository in settings
@@ -202,5 +199,73 @@ let util = {
 		const urlFromString = string.match(urlRegex)[0];
 
 		return urlFromString;
+	}
+}
+
+let apps = {
+	installedApps: [],
+	getInstalledApps: () => {
+		apps.installedApps = Settings.getValue(settingsAppListName, []);
+		return apps.installedApps;
+	},
+	install: (url) => {
+		debugLog(`Installing "${url}".`);
+
+		url = util.extractUrlFromString(url);
+		if (!url) {
+			debugLog(`Provided url was invalid.`);
+			return null
+		}
+
+		if (apps.isAppAlreadyInstalled(url)) {
+			debugLog(`App is already installed.`);
+			return null;
+		}
+
+		ScriptDiscoveryService.loadScript(url, true);
+		installedApps.push(url);
+		Settings.setValue(settingsAppListName, apps.installedApps);
+
+		return true;
+	},
+	remove: (url) => {
+		debugLog(`Removing ${url}.`);
+
+		url = util.extractUrlFromString(url);
+		if (!url) {
+			debugLog(`Provided url was invalid.`);
+			return null
+		}
+
+		if (apps.isAppAlreadyInstalled(url) === false) {
+			debugLog(`"${url}" is not installed.`);
+			return null;
+		}
+
+		ScriptDiscoveryService.stopScript(url, false);
+		const indexOfApp = apps.installedApps.indexOf(url);
+		apps.installedApps.splice(indexOfApp, 1);
+		Settings.setValue(settingsAppListName, apps.installedApps);
+
+		return true;
+	},
+	isAppAlreadyInstalled: (url) => {
+		return apps.installedApps.indexOf(url) > -1;
+	}
+}
+
+let ui = {
+	sendAppListToQML: (appList) => {
+		return sendMessageToQML({ type: "appList", appList: appList });
+	}
+}
+
+let versioning = {
+	app: (appData, repositoryVersion) => {
+		if (!repositoryVersion) {
+			// Assume version 1.
+
+
+		}
 	}
 }

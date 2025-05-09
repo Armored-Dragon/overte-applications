@@ -168,7 +168,8 @@ Rectangle {
 	// Messages from script
 	function fromScript(message) {
 		switch (message.type){
-
+			case "appList": 
+				appList = message.appList;
 		}
 	}
 
