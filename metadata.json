@@ -4,11 +4,14 @@
 	"base_url": "https://raw.githubusercontent.com/Armored-Dragon/overte-applications/master",
 	"application_list": [
 		{
-			"name": "Soulja",
-			"directory": "soulja",
-			"script": "soulja.js",
-			"icon": "img/icon_white.png",
-			"description": "SOULJA BOY TELL 'EM!\nPress X to play the iconic line by one-shot wonder Soulja boy!"
+			"appName": "Soulja",
+			"appScriptUrl": "soulja/soulja.js",
+			"appIcon": "img/icon_white.png",
+			"appDescription": "SOULJA BOY TELL 'EM!\nPress X to play the iconic line by one-shot wonder Soulja boy!",
+			"appAuthor": "Armored Dragon",
+			"appCodeMaturity": "STABLE",
+			"appAgeMaturity": "EVERYONE",
+			"appCategory": "ENTERTAINMENT"
 		}
 	]
 }
