@@ -38,7 +38,7 @@ function onMessageFromQML(event) {
 }
 
 function sendMessageToQML(message) {
-
+	app.tablet.sendToQml(message);
 }
 
 function installApplication(appUrl) {
@@ -74,6 +74,8 @@ let repos = {
 		debugLog(`Installing repository: ${url}`);
 
 		url = util.extractUrlFromString(url);
+
+		url = formatting.makeGitHubUrlValid(url);
 
 		if (repos.doWeHaveThisRepositorySaved(url)) {
 			debugLog(`Repository is already saved.`);
@@ -148,7 +150,7 @@ let util = {
 		}
 		catch (error) {
 			// Failed to convert to JSON, fail gracefully.
-			console.log(`Error parsing ${input} to JSON.`)
+			// console.log(`Error parsing ${input} to JSON.`)
 			return null;
 		}
 	},
@@ -269,3 +271,80 @@ let versioning = {
 		}
 	}
 }
+
+let formatting = {
+	rawGitHubUrlRegex: /^(?:https?:\/\/)raw\.githubusercontent\.com\/[^\/]+\/[^\/]+\/refs\/heads\/.+$/,
+	gitHubUrlRegex: /^https:\/\/github\.com\/[^\/]+\/[^\/]+\/blob\/[^\/]+\/.+$/,
+	upgradeToHttps: (url) => {
+		return url.replace("http://", "https://");
+	},
+	isValidGitHubUrl: (url) => {
+		const isRawGitHub = formatting.rawGitHubUrlRegex.test(url);
+		const isNormalGitHub = formatting.gitHubUrlRegex.test(url);
+
+		return isRawGitHub || isNormalGitHub;
+	},
+	// isGitHubUrl: (url) => {
+	// 	// TODO: make a more accurate GitHub checker.
+	// 	// TODO: Allow all github urls
+	// 	const expectedUrlPieces = ["http", "/", ":", "github.com"];
+	// 	const doesUrlContainAllExpectedPieces = expectedUrlPieces.every(piece => url.includes(piece));
+
+	// 	return doesUrlContainAllExpectedPieces;
+	// },
+	makeGitHubUrlValid: (url) => {
+		url = formatting.upgradeToHttps(url);
+
+		// In order for us to be able to get data easily, we need to use GitHubs "raw-content" url.
+		if (formatting.isValidGitHubUrl(url) === false) {
+			return null;
+		}
+
+		const githubUrlParts = formatting.getGitHubUrlKeyPieces(url);
+
+		const validGitHubUrl = `https://raw.githubusercontent.com/${githubUrlParts.owner}/${githubUrlParts.repositoryName}/refs/heads/${githubUrlParts.branch}/${githubUrlParts.directory}`
+
+		return validGitHubUrl;
+	},
+	getGitHubDirectory: (url) => {
+		if (url.contains("https://raw.githubusercontent.com/")) {
+			const trimmedString = url.replace("https://raw.githubusercontent.com/");
+			const splitString = trimmedString.split("/");
+
+			return `${splitString[0]}/${splitString[1]}`;
+		}
+	},
+	getGitHubUrlKeyPieces: (url) => {
+		let owner, repositoryName, branch, directory;
+
+		if (url.includes("https://raw.githubusercontent.com/")) {
+			// This is probably redundant
+
+			const trimmedString = url.replace("https://raw.githubusercontent.com/", "");
+			const splitString = trimmedString.split("/");
+
+			owner = splitString[0];
+			repositoryName = splitString[1];
+			branch = splitString[4];
+			directory = splitString.slice(5).join('/');
+
+			return { owner, repositoryName, branch, directory };
+		}
+
+		if (url.includes(`https://github.com/`)) {
+			const trimmedString = url.replace("https://github.com/", "");
+			const splitString = trimmedString.split("/");
+
+			owner = splitString[0];
+			repositoryName = splitString[1];
+			branch = splitString[3];
+			directory = splitString.slice(4).join('/');
+
+			return { owner, repositoryName, branch, directory };
+		}
+	}
+}
+
+// https://github.com/Armored-Dragon/overte-applications/blob/master/metadata.json
+// https://raw.githubusercontent.com/Armored-Dragon/overte-applications/refs/heads/master/metadata.json
+// https://raw.githubusercontent.com/Armored-Dragon/overte-applications/blob/master/metadata.json

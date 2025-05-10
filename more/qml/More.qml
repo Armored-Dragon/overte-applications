@@ -7,6 +7,7 @@ import "./widgets/CustomListView"
 import "./pages"
 
 Rectangle {
+	signal sendToScript(var message);
 	property var appList: [];
 
 	Colors {
@@ -59,20 +60,20 @@ Rectangle {
 			width: parent.width - 10;
 			x: 5;
 
-			// Repeater {
-			// 	model: appList.length;
-			// 	delegate: ApplicationListEntry {
-				// appName: pages[index].appName;
-				// appIcon: pages[index].appIcon;
-				// appAuthor: pages[index].appAuthor;
-				// appCodeMaturity: pages[index].appCodeMaturity;
-				// appCategory: pages[index].appCategory;
-				// appAgeMaturity: pages[index].appAgeMaturity;
-				// appDescription: pages[index].appDescription;
-				// appRepositoryName: pages[index].appRepositoryName;
-				// appRepositoryUrl: pages[index].appRepositoryUrl;
-			// 	}
-			// }
+			Repeater {
+				model: appList.length;
+				delegate: ApplicationListEntry {
+				appName: appList[index].appName;
+				appIcon: appList[index].appIcon;
+				appAuthor: appList[index].appAuthor;
+				appCodeMaturity: appList[index].appCodeMaturity;
+				appCategory: appList[index].appCategory;
+				appAgeMaturity: appList[index].appAgeMaturity;
+				appDescription: appList[index].appDescription;
+				appRepositoryName: appList[index].appRepositoryName;
+				appRepositoryUrl: appList[index].appRepositoryUrl;
+				}
+			}
 
 			ApplicationListEntry {
 				appName: "Test App";
@@ -86,29 +87,29 @@ Rectangle {
 				appRepositoryUrl: "https://github.com/Armored-Dragon/overte-applications";
 			}
 
-			ApplicationListEntry {
-				appName: "Test App";
-				appIcon: "https://adragon.dev/img/logos/armoreddragonpfp.png";
-				appAuthor: "Armored Dragon";
-				appCodeMaturity: "BETA";
-				appCategory: "Software";
-				appAgeMaturity: "TEEN";
-				appDescription: "This is my amazing and awesome description for this awesome and amazing application.";
-				appRepositoryName: "Overte-Applications";
-				appRepositoryUrl: "https://github.com/Armored-Dragon/overte-applications";
-			}
+			// ApplicationListEntry {
+			// 	appName: "Test App";
+			// 	appIcon: "https://adragon.dev/img/logos/armoreddragonpfp.png";
+			// 	appAuthor: "Armored Dragon";
+			// 	appCodeMaturity: "BETA";
+			// 	appCategory: "Software";
+			// 	appAgeMaturity: "TEEN";
+			// 	appDescription: "This is my amazing and awesome description for this awesome and amazing application.";
+			// 	appRepositoryName: "Overte-Applications";
+			// 	appRepositoryUrl: "https://github.com/Armored-Dragon/overte-applications";
+			// }
 
-			ApplicationListEntry {
-				appName: "Test App";
-				appIcon: "https://adragon.dev/img/logos/armoreddragonpfp.png";
-				appAuthor: "Armored Dragon";
-				appCodeMaturity: "ALPHA";
-				appCategory: "Sexy Kinky Time";
-				appAgeMaturity: "ADULT";
-				appDescription: "This is my amazing and awesome description for this awesome and amazing application.";
-				appRepositoryName: "Overte-Applications";
-				appRepositoryUrl: "https://github.com/Armored-Dragon/overte-applications";
-			}
+			// ApplicationListEntry {
+			// 	appName: "Test App";
+			// 	appIcon: "https://adragon.dev/img/logos/armoreddragonpfp.png";
+			// 	appAuthor: "Armored Dragon";
+			// 	appCodeMaturity: "ALPHA";
+			// 	appCategory: "Sexy Kinky Time";
+			// 	appAgeMaturity: "ADULT";
+			// 	appDescription: "This is my amazing and awesome description for this awesome and amazing application.";
+			// 	appRepositoryName: "Overte-Applications";
+			// 	appRepositoryUrl: "https://github.com/Armored-Dragon/overte-applications";
+			// }
 		}
 	}
 
@@ -167,9 +168,11 @@ Rectangle {
 
 	// Messages from script
 	function fromScript(message) {
-		switch (message.type){
+		switch (message.type) {
 			case "appList": 
 				appList = message.appList;
+				print(JSON.stringify(appList));
+				break;
 		}
 	}
 
