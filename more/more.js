@@ -10,7 +10,89 @@
 //  See the accompanying file LICENSE or http://www.apache.org/licenses/LICENSE-2.0.html
 //
 
-const { app } = Script.require("./lib/app.js");
+// -------------------------------------------
+// app.js
+const appSettings = {
+	name: "MORE",
+	icon: Script.resolvePath("./img/icon_white.png"),
+	activeIcon: Script.resolvePath("./img/icon_black.png"),
+	url: Script.resolvePath("./qml/More.qml")
+}
+
+let app = {
+	toolbarAppButton: null,
+	tablet: null,
+	active: false,
+	add: () => {
+		app.tablet = Tablet.getTablet("com.highfidelity.interface.tablet.system");
+
+		addAppToToolbar();
+
+		app.tablet.fromQml.connect(onMessageFromQML);
+	},
+	remove: () => {
+		app.tablet.fromQml.disconnect(onMessageFromQML);
+		removeAppFromToolbar();
+	}
+}
+
+function addAppToToolbar() {
+	// Check if app is on toolbar
+
+	app.toolbarAppButton = app.tablet.addButton({
+		icon: appSettings.icon,
+		activeIcon: appSettings.activeIcon,
+		text: appSettings.name,
+		isActive: app.active,
+	});
+
+	app.toolbarAppButton.clicked.connect(toolbarButtonClicked);
+}
+function removeAppFromToolbar() {
+	if (app.toolbarAppButton) {
+		app.tablet.removeButton(app.toolbarAppButton);
+	}
+}
+
+function toolbarButtonClicked() {
+	if (app.active) {
+		deactivateToolbarButton();
+	}
+	else {
+		activateToolbarButton();
+		ui.sendAppListToQML();
+	}
+}
+
+function onTabletScreenChanged(type, newURL) {
+	if (appSettings.url === newURL) {
+		activateToolbarButton();
+	}
+	else {
+		deactivateToolbarButton();
+	}
+}
+
+function deactivateToolbarButton() {
+	if (app.active === false) return; // Already inactive, ignore.
+
+	app.active = false;
+	app.tablet.gotoHomeScreen();
+	app.toolbarAppButton.editProperties({ isActive: false });
+	app.tablet.screenChanged.disconnect(onTabletScreenChanged);
+}
+
+function activateToolbarButton() {
+	if (app.active) return; // Already active, ignore.
+
+	app.tablet.loadQMLSource(appSettings.url);
+	app.active = true;
+	app.toolbarAppButton.editProperties({ isActive: true });
+	app.tablet.screenChanged.connect(onTabletScreenChanged);
+}
+// -------------------------------------------
+
+// const { app } = Script.require("./lib/app.js");
 const format = Script.require("./lib/format.js");
 const io = Script.require("./lib/io.js");
 // const { repos } = Script.require("./lib/repos.js");
@@ -65,10 +147,35 @@ let repos = {
 	maxVersion: 2,
 	repositories: [],
 	applications: [],
-	fetchRepositories: () => { },
+	fetchAllAppsFromSavedRepositories: async () => {
+		debugLog(`Fetching all saved repositories.`);
+		repos.loadRepositoriesFromStorage();
+		repos.applications = [];
+
+		for (let i = 0; repos.repositories.length > i; i++) {
+			const targetRepository = repos.repositories[i];
+			const rawRepositoryContent = await repos.fetchRepositoryContent(targetRepository);
+			debugLog(rawRepositoryContent);
+			rawRepositoryContent.forEach((entry) => { debugLog(entry); repos.applications.push(entry) });
+		}
+		ui.sendAppListToQML(repos.applications);
+		debugLog(`Finished fetching all saved repositories.`);
+	},
 	fetchRepositoryContent: async (url) => {
 		let repositoryContent = await util.request(url);
-		return repositoryContent;
+		repositoryContent = util.toJSON(repositoryContent);
+
+		// TODO: Versioning
+
+		const formattedArrayOfApplicationsFromRepository = repositoryContent.application_list.map((applicationEntry, index) => {
+			return {
+				...applicationEntry,
+				appRepositoryName: repositoryContent.title,
+				appRepositoryUrl: repositoryContent.base_url,
+			}
+		});
+
+		return formattedArrayOfApplicationsFromRepository;
 	},
 	installRepository: async (url) => {
 		debugLog(`Installing repository: ${url}`);
@@ -83,7 +190,6 @@ let repos = {
 		}
 
 		let repositoryContent = await repos.fetchRepositoryContent(url);
-		repositoryContent = util.toJSON(repositoryContent);
 
 		if (!repositoryContent) {
 			debugLog(`Repository does not contain valid JSON.`);
@@ -99,15 +205,7 @@ let repos = {
 
 		Settings.setValue(settingsRepositoryListName, repos.repositories);
 
-		let formattedArrayOfApplicationsFromRepository = repositoryContent.application_list.map((applicationEntry, index) => {
-			return {
-				...applicationEntry,
-				appRepositoryName: repositoryContent.title,
-				appRepositoryUrl: repositoryContent.base_url,
-			}
-		});
-
-		formattedArrayOfApplicationsFromRepository.forEach((entry) => repos.applications.push(entry));
+		repositoryContent.applications.forEach((entry) => repos.applications.push(entry));
 
 		debugLog(repos.applications);
 		ui.sendAppListToQML(repos.applications);
@@ -128,6 +226,9 @@ let repos = {
 	},
 	doWeHaveThisRepositorySaved: (url) => {
 		return repos.repositories.indexOf(url) > -1;
+	},
+	loadRepositoriesFromStorage: () => {
+		repos.repositories = Settings.getValue(settingsRepositoryListName, []);
 	}
 }
 
@@ -258,7 +359,7 @@ let apps = {
 
 let ui = {
 	sendAppListToQML: (appList) => {
-		return sendMessageToQML({ type: "appList", appList: appList });
+		return sendMessageToQML({ type: "appList", appList: appList || repos.applications });
 	}
 }
 
@@ -345,6 +446,6 @@ let formatting = {
 	}
 }
 
-// https://github.com/Armored-Dragon/overte-applications/blob/master/metadata.json
-// https://raw.githubusercontent.com/Armored-Dragon/overte-applications/refs/heads/master/metadata.json
-// https://raw.githubusercontent.com/Armored-Dragon/overte-applications/blob/master/metadata.json
+
+
+repos.fetchAllAppsFromSavedRepositories();
