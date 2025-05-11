@@ -12,6 +12,16 @@
 			"appCodeMaturity": "STABLE",
 			"appAgeMaturity": "EVERYONE",
 			"appCategory": "ENTERTAINMENT"
+		},
+		{
+			"appName": "More",
+			"appScriptUrl": "more/more.js",
+			"appIcon": "img/icon_white.png",
+			"appDescription": "More application with more features!",
+			"appAuthor": "Armored Dragon",
+			"appCodeMaturity": "STABLE",
+			"appAgeMaturity": "EVERYONE",
+			"appCategory": "UTILITY"
 		}
 	]
 }
