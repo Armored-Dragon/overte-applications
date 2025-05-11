@@ -60,7 +60,7 @@ function toolbarButtonClicked() {
 	}
 	else {
 		activateToolbarButton();
-		ui.sendAppListToQML();
+
 	}
 }
 
@@ -89,6 +89,9 @@ function activateToolbarButton() {
 	app.active = true;
 	app.toolbarAppButton.editProperties({ isActive: true });
 	app.tablet.screenChanged.connect(onTabletScreenChanged);
+
+	ui.sendRepositoryListToQML();
+	ui.sendAppListToQML(repos.applications);
 }
 // -------------------------------------------
 
@@ -112,9 +115,15 @@ function appShuttingDown() {
 
 function onMessageFromQML(event) {
 	switch (event.type) {
-		case ("addNewRepositoryButtonClicked"):
+		case "addNewRepositoryButtonClicked":
 			let newRepositoryUrl = Window.prompt("Enter the URL of the repository metadata.json file.", "");
 			repos.installRepository(newRepositoryUrl);
+			break;
+		case "installApp":
+			apps.install(event.appUrl);
+			break;
+		case "uninstallApp":
+			apps.remove(event.appUrl);
 			break;
 	}
 }
@@ -159,6 +168,7 @@ let repos = {
 			rawRepositoryContent.forEach((entry) => { debugLog(entry); repos.applications.push(entry) });
 		}
 		ui.sendAppListToQML(repos.applications);
+		ui.sendRepositoryListToQML(repos.applications);
 		debugLog(`Finished fetching all saved repositories.`);
 	},
 	fetchRepositoryContent: async (url) => {
@@ -172,8 +182,11 @@ let repos = {
 				...applicationEntry,
 				appRepositoryName: repositoryContent.title,
 				appRepositoryUrl: repositoryContent.base_url,
+				appUrl: repositoryContent.base_url + "/" + applicationEntry.appScriptUrl
 			}
 		});
+
+		debugLog(formattedArrayOfApplicationsFromRepository);
 
 		return formattedArrayOfApplicationsFromRepository;
 	},
@@ -325,8 +338,10 @@ let apps = {
 			return null;
 		}
 
+		// TODO: Check if app is loaded
+
 		ScriptDiscoveryService.loadScript(url, true);
-		installedApps.push(url);
+		apps.installedApps.push(url);
 		Settings.setValue(settingsAppListName, apps.installedApps);
 
 		return true;
@@ -359,7 +374,15 @@ let apps = {
 
 let ui = {
 	sendAppListToQML: (appList) => {
-		return sendMessageToQML({ type: "appList", appList: appList || repos.applications });
+		sendMessageToQML({ type: "appList", appList: appList });
+		return;
+	},
+	sendRepositoryListToQML: () => {
+		let formattedListOfRepositories = repos.repositories.map((entry) => { return { entryText: entry } });
+		sendMessageToQML({
+			type: "repositoryList", repositoryList: formattedListOfRepositories
+		});
+		return;
 	}
 }
 
@@ -445,7 +468,5 @@ let formatting = {
 		}
 	}
 }
-
-
 
 repos.fetchAllAppsFromSavedRepositories();

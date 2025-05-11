@@ -76,14 +76,17 @@ Rectangle {
 				CustomButton {
 					buttonText: "Install";
 					buttonColor: colors.buttonSafe;
+					onClickedFunc: () => { installApp(appUrl) }
 				}
 				CustomButton {
 					buttonText: "Remove";
 					buttonColor: colors.buttonDanger;
+					onClickedFunc: () => { uninstallApp(appUrl) }
 				}
 				CustomButton {
 					buttonText: "View Repository";
 					buttonColor: colors.button;
+					// TODO
 				}
 			}
 

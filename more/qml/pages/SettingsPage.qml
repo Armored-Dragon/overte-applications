@@ -7,6 +7,7 @@ import "../widgets/CustomListView"
 Item {
 	width: parent.width;
 	height: parent.height;
+	property var entryList: [""];
 
 	ColumnLayout {
 		width: parent.width - 10;
@@ -25,7 +26,7 @@ Item {
 		CustomListView {
 			Layout.fillHeight: true;
 			onAddEntryButtonClickedFunc: () => {toScript({type: "addNewRepositoryButtonClicked"})}; 
-			entries: [{entryText: "Hallo!"}, {entryText: "second!"}];
+			entries: entryList;
 		}
 	}
 }

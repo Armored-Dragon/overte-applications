@@ -31,6 +31,7 @@ Item {
 					color: "white";
 					Layout.fillWidth: true;
 					id: entryTextComponent;
+					wrapMode: Text.Wrap;
 				}
 
 				CustomButton {

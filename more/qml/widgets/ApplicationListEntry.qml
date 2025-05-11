@@ -23,7 +23,7 @@ Rectangle {
 
 
 	width: parent.width;
-	height: isActive ? 100 : 75;
+	height: 75;
 
 	color: colors.darkBackground2;
 
@@ -105,7 +105,8 @@ Rectangle {
 				appAuthor,
 				appRepositoryName,
 				appRepositoryUrl,
-				appIcon
+				appIcon,
+				appUrl
 			)
 		}
 

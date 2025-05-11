@@ -9,6 +9,7 @@ import "./pages"
 Rectangle {
 	signal sendToScript(var message);
 	property var appList: [];
+	property var repositoryList: [];
 
 	Colors {
 		id: colors;
@@ -72,20 +73,21 @@ Rectangle {
 				appDescription: appList[index].appDescription;
 				appRepositoryName: appList[index].appRepositoryName;
 				appRepositoryUrl: appList[index].appRepositoryUrl;
+				appUrl: appList[index].appUrl;
 				}
 			}
 
-			ApplicationListEntry {
-				appName: "Test App";
-				appIcon: "https://adragon.dev/img/logos/armoreddragonpfp.png";
-				appAuthor: "Armored Dragon";
-				appCodeMaturity: "STABLE";
-				appCategory: "Building";
-				appAgeMaturity: "EVERYONE";
-				appDescription: "This is my amazing and awesome description for this awesome and amazing application.";
-				appRepositoryName: "Overte-Applications";
-				appRepositoryUrl: "https://github.com/Armored-Dragon/overte-applications";
-			}
+			// ApplicationListEntry {
+			// 	appName: "Test App";
+			// 	appIcon: "https://adragon.dev/img/logos/armoreddragonpfp.png";
+			// 	appAuthor: "Armored Dragon";
+			// 	appCodeMaturity: "STABLE";
+			// 	appCategory: "Building";
+			// 	appAgeMaturity: "EVERYONE";
+			// 	appDescription: "This is my amazing and awesome description for this awesome and amazing application.";
+			// 	appRepositoryName: "Overte-Applications";
+			// 	appRepositoryUrl: "https://github.com/Armored-Dragon/overte-applications";
+			// }
 
 			// ApplicationListEntry {
 			// 	appName: "Test App";
@@ -123,6 +125,7 @@ Rectangle {
 	SettingsPage {
 		id: settingsPage;
 		visible: false;
+		entryList: repositoryList;
 	}
 
 	function showAppDetailPage(
@@ -134,7 +137,8 @@ Rectangle {
 				appAuthor,
 				appRepositoryName,
 				appRepositoryUrl,
-				appIcon) 
+				appIcon,
+				appUrl) 
 	{
 		applicationDetailPage.appName = appName;
 		applicationDetailPage.appCategory = appCategory;
@@ -145,6 +149,7 @@ Rectangle {
 		applicationDetailPage.appRepositoryName = appRepositoryName;
 		applicationDetailPage.appRepositoryUrl = appRepositoryUrl;
 		applicationDetailPage.appIcon = appIcon;
+		applicationDetailPage.appUrl = appUrl,
 
 		hideAllPages();
 		applicationDetailPage.visible = true;
@@ -166,12 +171,22 @@ Rectangle {
 		settingsPage.visible = false;
 	}
 
+	function installApp(appUrl) {
+		toScript({type: "installApp", appUrl: appUrl});
+	}
+
+	function uninstallApp(appUrl) {
+		toScript({type: "uninstallApp", appUrl: appUrl});
+	}
+
 	// Messages from script
 	function fromScript(message) {
 		switch (message.type) {
 			case "appList": 
 				appList = message.appList;
-				print(JSON.stringify(appList));
+				break;
+			case "repositoryList":
+				repositoryList = message.repositoryList;
 				break;
 		}
 	}
