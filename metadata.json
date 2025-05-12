@@ -5,11 +5,12 @@
 	"application_list": [
 		{
 			"appName": "Soulja",
-			"appScriptUrl": "soulja/soulja.js",
+			"appScriptVersions": {
+				"stable": "soulja/soulja.js"
+			},
 			"appIcon": "img/icon_white.png",
 			"appDescription": "SOULJA BOY TELL 'EM!\nPress X to play the iconic line by one-shot wonder Soulja boy!",
 			"appAuthor": "Armored Dragon",
-			"appCodeMaturity": "STABLE",
 			"appAgeMaturity": "EVERYONE",
 			"appCategory": "ENTERTAINMENT"
 		}
