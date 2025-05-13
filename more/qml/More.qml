@@ -76,42 +76,6 @@ Rectangle {
 				appVersions: appList[index].appScriptVersions;
 				}
 			}
-
-			// ApplicationListEntry {
-			// 	appName: "Test App";
-			// 	appIcon: "https://adragon.dev/img/logos/armoreddragonpfp.png";
-			// 	appAuthor: "Armored Dragon";
-			// 	appCodeMaturity: "STABLE";
-			// 	appCategory: "Building";
-			// 	appAgeMaturity: "EVERYONE";
-			// 	appDescription: "This is my amazing and awesome description for this awesome and amazing application.";
-			// 	appRepositoryName: "Overte-Applications";
-			// 	appRepositoryUrl: "https://github.com/Armored-Dragon/overte-applications";
-			// }
-
-			// ApplicationListEntry {
-			// 	appName: "Test App";
-			// 	appIcon: "https://adragon.dev/img/logos/armoreddragonpfp.png";
-			// 	appAuthor: "Armored Dragon";
-			// 	appCodeMaturity: "BETA";
-			// 	appCategory: "Software";
-			// 	appAgeMaturity: "TEEN";
-			// 	appDescription: "This is my amazing and awesome description for this awesome and amazing application.";
-			// 	appRepositoryName: "Overte-Applications";
-			// 	appRepositoryUrl: "https://github.com/Armored-Dragon/overte-applications";
-			// }
-
-			// ApplicationListEntry {
-			// 	appName: "Test App";
-			// 	appIcon: "https://adragon.dev/img/logos/armoreddragonpfp.png";
-			// 	appAuthor: "Armored Dragon";
-			// 	appCodeMaturity: "ALPHA";
-			// 	appCategory: "Sexy Kinky Time";
-			// 	appAgeMaturity: "ADULT";
-			// 	appDescription: "This is my amazing and awesome description for this awesome and amazing application.";
-			// 	appRepositoryName: "Overte-Applications";
-			// 	appRepositoryUrl: "https://github.com/Armored-Dragon/overte-applications";
-			// }
 		}
 	}
 
