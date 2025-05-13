@@ -123,7 +123,7 @@ function onMessageFromQML(event) {
 			apps.install(event.appUrl, event.baseUrl);
 			break;
 		case "uninstallApp":
-			apps.remove(event.appUrl);
+			apps.remove(event.appUrl, event.baseUrl);
 			break;
 	}
 }
@@ -358,8 +358,15 @@ let apps = {
 
 		return true;
 	},
-	remove: (url) => {
+	remove: (url, baseUrl) => {
 		debugLog(`Removing ${url}.`);
+
+		if (util.isValidUrl(url) === false) {
+			// Not a url, handle this as a relative path.
+			debugLog(`Handling link as a relative url.`);
+			url = `${baseUrl}/${url}`;
+			debugLog(`Url was changed to "${url}`);
+		}
 
 		url = util.extractUrlFromString(url);
 		if (!url) {

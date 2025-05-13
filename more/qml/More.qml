@@ -175,8 +175,8 @@ Rectangle {
 		toScript({type: "installApp", appUrl, baseUrl});
 	}
 
-	function uninstallApp(appUrl) {
-		toScript({type: "uninstallApp", appUrl: appUrl});
+	function uninstallApp(appUrl, baseUrl) {
+		toScript({type: "uninstallApp", appUrl, baseUrl});
 	}
 
 	// Messages from script

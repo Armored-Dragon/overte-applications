@@ -81,7 +81,7 @@ Rectangle {
 				CustomButton {
 					buttonText: "Remove";
 					buttonColor: colors.buttonDanger;
-					onClickedFunc: () => { uninstallApp(appVersions.stable) }
+					onClickedFunc: () => { uninstallApp(appVersions.stable, appRepositoryUrl) }
 				}
 				CustomButton {
 					buttonText: "View Repository";
