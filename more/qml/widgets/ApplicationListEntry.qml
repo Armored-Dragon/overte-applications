@@ -12,7 +12,7 @@ Rectangle {
 	property string appAuthor: "";
 	property string appRepositoryName: "";
 	property string appRepositoryUrl: "";
-	property string appUrl: "";
+	property var appVersions: {};
 	property string appIcon: "";
 
 	readonly property var maturityColors: {
@@ -106,7 +106,7 @@ Rectangle {
 				appRepositoryName,
 				appRepositoryUrl,
 				appIcon,
-				appUrl
+				appVersions
 			)
 		}
 

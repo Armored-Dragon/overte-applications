@@ -73,7 +73,7 @@ Rectangle {
 				appDescription: appList[index].appDescription;
 				appRepositoryName: appList[index].appRepositoryName;
 				appRepositoryUrl: appList[index].appRepositoryUrl;
-				appUrl: appList[index].appUrl;
+				appVersions: appList[index].appScriptVersions;
 				}
 			}
 
@@ -138,7 +138,7 @@ Rectangle {
 				appRepositoryName,
 				appRepositoryUrl,
 				appIcon,
-				appUrl) 
+				appVersions) 
 	{
 		applicationDetailPage.appName = appName;
 		applicationDetailPage.appCategory = appCategory;
@@ -149,7 +149,7 @@ Rectangle {
 		applicationDetailPage.appRepositoryName = appRepositoryName;
 		applicationDetailPage.appRepositoryUrl = appRepositoryUrl;
 		applicationDetailPage.appIcon = appIcon;
-		applicationDetailPage.appUrl = appUrl,
+		applicationDetailPage.appVersions = appVersions,
 
 		hideAllPages();
 		applicationDetailPage.visible = true;
@@ -171,8 +171,8 @@ Rectangle {
 		settingsPage.visible = false;
 	}
 
-	function installApp(appUrl) {
-		toScript({type: "installApp", appUrl: appUrl});
+	function installApp(appUrl, baseUrl) {
+		toScript({type: "installApp", appUrl, baseUrl});
 	}
 
 	function uninstallApp(appUrl) {

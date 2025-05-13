@@ -120,7 +120,7 @@ function onMessageFromQML(event) {
 			repos.installRepository(newRepositoryUrl);
 			break;
 		case "installApp":
-			apps.install(event.appUrl);
+			apps.install(event.appUrl, event.baseUrl);
 			break;
 		case "uninstallApp":
 			apps.remove(event.appUrl);
@@ -156,6 +156,7 @@ let repos = {
 	maxVersion: 2,
 	repositories: [],
 	applications: [],
+
 	fetchAllAppsFromSavedRepositories: async () => {
 		debugLog(`Fetching all saved repositories.`);
 		repos.loadRepositoriesFromStorage();
@@ -164,11 +165,12 @@ let repos = {
 		for (let i = 0; repos.repositories.length > i; i++) {
 			const targetRepository = repos.repositories[i];
 			const rawRepositoryContent = await repos.fetchRepositoryContent(targetRepository);
-			debugLog(rawRepositoryContent);
-			rawRepositoryContent.forEach((entry) => { debugLog(entry); repos.applications.push(entry) });
+			rawRepositoryContent.application_list.forEach((entry) => { debugLog(entry); repos.applications.push(entry) });
 		}
+
 		ui.sendAppListToQML(repos.applications);
 		ui.sendRepositoryListToQML(repos.applications);
+		debugLog(repos.applications)
 		debugLog(`Finished fetching all saved repositories.`);
 	},
 	fetchRepositoryContent: async (url) => {
@@ -181,21 +183,24 @@ let repos = {
 			return {
 				...applicationEntry,
 				appRepositoryName: repositoryContent.title,
-				appRepositoryUrl: repositoryContent.base_url,
-				appUrl: repositoryContent.base_url + "/" + applicationEntry.appScriptUrl
+				appRepositoryUrl: repositoryContent.base_url
 			}
 		});
 
-		debugLog(formattedArrayOfApplicationsFromRepository);
+		repositoryContent.application_list = formattedArrayOfApplicationsFromRepository;
 
-		return formattedArrayOfApplicationsFromRepository;
+		debugLog(repositoryContent);
+
+		return repositoryContent;
 	},
 	installRepository: async (url) => {
 		debugLog(`Installing repository: ${url}`);
 
 		url = util.extractUrlFromString(url);
-
-		url = formatting.makeGitHubUrlValid(url);
+		if (url === null) {
+			debugLog(`Failed to extract url from string.`);
+			return;
+		}
 
 		if (repos.doWeHaveThisRepositorySaved(url)) {
 			debugLog(`Repository is already saved.`);
@@ -324,8 +329,15 @@ let apps = {
 		apps.installedApps = Settings.getValue(settingsAppListName, []);
 		return apps.installedApps;
 	},
-	install: (url) => {
+	install: (url, baseUrl) => {
 		debugLog(`Installing "${url}".`);
+
+		if (util.isValidUrl(url) === false) {
+			// Not a url, handle this as a relative path.
+			debugLog(`Handling link as a relative url.`);
+			url = `${baseUrl}/${url}`;
+			debugLog(`Url was changed to "${url}`);
+		}
 
 		url = util.extractUrlFromString(url);
 		if (!url) {
@@ -397,76 +409,76 @@ let versioning = {
 }
 
 let formatting = {
-	rawGitHubUrlRegex: /^(?:https?:\/\/)raw\.githubusercontent\.com\/[^\/]+\/[^\/]+\/refs\/heads\/.+$/,
-	gitHubUrlRegex: /^https:\/\/github\.com\/[^\/]+\/[^\/]+\/blob\/[^\/]+\/.+$/,
-	upgradeToHttps: (url) => {
-		return url.replace("http://", "https://");
-	},
-	isValidGitHubUrl: (url) => {
-		const isRawGitHub = formatting.rawGitHubUrlRegex.test(url);
-		const isNormalGitHub = formatting.gitHubUrlRegex.test(url);
-
-		return isRawGitHub || isNormalGitHub;
-	},
-	// isGitHubUrl: (url) => {
-	// 	// TODO: make a more accurate GitHub checker.
-	// 	// TODO: Allow all github urls
-	// 	const expectedUrlPieces = ["http", "/", ":", "github.com"];
-	// 	const doesUrlContainAllExpectedPieces = expectedUrlPieces.every(piece => url.includes(piece));
-
-	// 	return doesUrlContainAllExpectedPieces;
+	// rawGitHubUrlRegex: /^(?:https?:\/\/)raw\.githubusercontent\.com\/[^\/]+\/[^\/]+\/refs\/heads\/.+$/,
+	// gitHubUrlRegex: /^https:\/\/github\.com\/[^\/]+\/[^\/]+\/blob\/[^\/]+\/.+$/,
+	// upgradeToHttps: (url) => {
+	// 	return url.replace("http://", "https://");
 	// },
-	makeGitHubUrlValid: (url) => {
-		url = formatting.upgradeToHttps(url);
+	// isValidGitHubUrl: (url) => {
+	// 	const isRawGitHub = formatting.rawGitHubUrlRegex.test(url);
+	// 	const isNormalGitHub = formatting.gitHubUrlRegex.test(url);
 
-		// In order for us to be able to get data easily, we need to use GitHubs "raw-content" url.
-		if (formatting.isValidGitHubUrl(url) === false) {
-			return null;
-		}
+	// 	return isRawGitHub || isNormalGitHub;
+	// },
+	// // isGitHubUrl: (url) => {
+	// // 	// TODO: make a more accurate GitHub checker.
+	// // 	// TODO: Allow all github urls
+	// // 	const expectedUrlPieces = ["http", "/", ":", "github.com"];
+	// // 	const doesUrlContainAllExpectedPieces = expectedUrlPieces.every(piece => url.includes(piece));
 
-		const githubUrlParts = formatting.getGitHubUrlKeyPieces(url);
+	// // 	return doesUrlContainAllExpectedPieces;
+	// // },
+	// makeGitHubUrlValid: (url) => {
+	// 	url = formatting.upgradeToHttps(url);
 
-		const validGitHubUrl = `https://raw.githubusercontent.com/${githubUrlParts.owner}/${githubUrlParts.repositoryName}/refs/heads/${githubUrlParts.branch}/${githubUrlParts.directory}`
+	// 	// In order for us to be able to get data easily, we need to use GitHubs "raw-content" url.
+	// 	if (formatting.isValidGitHubUrl(url) === false) {
+	// 		return null;
+	// 	}
 
-		return validGitHubUrl;
-	},
-	getGitHubDirectory: (url) => {
-		if (url.contains("https://raw.githubusercontent.com/")) {
-			const trimmedString = url.replace("https://raw.githubusercontent.com/");
-			const splitString = trimmedString.split("/");
+	// 	const githubUrlParts = formatting.getGitHubUrlKeyPieces(url);
 
-			return `${splitString[0]}/${splitString[1]}`;
-		}
-	},
-	getGitHubUrlKeyPieces: (url) => {
-		let owner, repositoryName, branch, directory;
+	// 	const validGitHubUrl = `https://raw.githubusercontent.com/${githubUrlParts.owner}/${githubUrlParts.repositoryName}/refs/heads/${githubUrlParts.branch}/${githubUrlParts.directory}`
 
-		if (url.includes("https://raw.githubusercontent.com/")) {
-			// This is probably redundant
+	// 	return validGitHubUrl;
+	// },
+	// getGitHubDirectory: (url) => {
+	// 	if (url.contains("https://raw.githubusercontent.com/")) {
+	// 		const trimmedString = url.replace("https://raw.githubusercontent.com/");
+	// 		const splitString = trimmedString.split("/");
 
-			const trimmedString = url.replace("https://raw.githubusercontent.com/", "");
-			const splitString = trimmedString.split("/");
+	// 		return `${splitString[0]}/${splitString[1]}`;
+	// 	}
+	// },
+	// getGitHubUrlKeyPieces: (url) => {
+	// 	let owner, repositoryName, branch, directory;
 
-			owner = splitString[0];
-			repositoryName = splitString[1];
-			branch = splitString[4];
-			directory = splitString.slice(5).join('/');
+	// 	if (url.includes("https://raw.githubusercontent.com/")) {
+	// 		// This is probably redundant
 
-			return { owner, repositoryName, branch, directory };
-		}
+	// 		const trimmedString = url.replace("https://raw.githubusercontent.com/", "");
+	// 		const splitString = trimmedString.split("/");
 
-		if (url.includes(`https://github.com/`)) {
-			const trimmedString = url.replace("https://github.com/", "");
-			const splitString = trimmedString.split("/");
+	// 		owner = splitString[0];
+	// 		repositoryName = splitString[1];
+	// 		branch = splitString[4];
+	// 		directory = splitString.slice(5).join('/');
 
-			owner = splitString[0];
-			repositoryName = splitString[1];
-			branch = splitString[3];
-			directory = splitString.slice(4).join('/');
+	// 		return { owner, repositoryName, branch, directory };
+	// 	}
 
-			return { owner, repositoryName, branch, directory };
-		}
-	}
+	// 	if (url.includes(`https://github.com/`)) {
+	// 		const trimmedString = url.replace("https://github.com/", "");
+	// 		const splitString = trimmedString.split("/");
+
+	// 		owner = splitString[0];
+	// 		repositoryName = splitString[1];
+	// 		branch = splitString[3];
+	// 		directory = splitString.slice(4).join('/');
+
+	// 		return { owner, repositoryName, branch, directory };
+	// 	}
+	// }
 }
 
 repos.fetchAllAppsFromSavedRepositories();
