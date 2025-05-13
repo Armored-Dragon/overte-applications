@@ -20,9 +20,11 @@ Rectangle {
 	color: "transparent";
 
 	Item {
+		visible: false;
 		width: parent.width - 10;
 		height: parent.height - 10;
 		anchors.centerIn: parent;
+		id: appDetailsElement;
 
 		Column {
 			width: parent.width;
@@ -76,7 +78,8 @@ Rectangle {
 				CustomButton {
 					buttonText: "Install";
 					buttonColor: colors.buttonSafe;
-					onClickedFunc: () => { installApp(appVersions.stable, appRepositoryUrl) }
+					onClickedFunc: () => { appVersionsElement.visible = true; appDetailsElement.visible = false; }
+					// onClickedFunc: () => { installApp(appVersions.stable, appRepositoryUrl) }
 				}
 				CustomButton {
 					buttonText: "Remove";
@@ -105,4 +108,86 @@ Rectangle {
 		}
 	}
 
+	// App version selection
+	Item {
+		visible: true;
+		width: parent.width - 10;
+		height: parent.height - 10;
+		anchors.centerIn: parent;
+		id: appVersionsElement;
+
+		ColumnLayout {
+			width: parent.width;
+			height: parent.height;
+
+			CustomButton {
+				width: parent.width;
+				buttonText: "Go Back";
+				buttonColor: colors.button;
+				onClickedFunc: () => { appVersionsElement.visible = false; appDetailsElement.visible = true; }
+			}
+			
+			Item {
+				width: parent.width;
+				Layout.fillHeight: true;
+
+				Repeater {
+					model: Object.keys(appVersions).length;
+					delegate: Rectangle {
+						property string appVersion: Object.keys(appVersions)[index];
+						property string appUrl: appVersions[Object.keys(appVersions)[index]];
+						width: parent.width;
+						height: 50;
+						color: colors.darkBackground2;
+
+						RowLayout {
+							width: parent.width;
+							height: 50;
+
+							Text {
+								text: appVersion;
+								color: "white";
+							}
+
+							Text {
+								text: appUrl;
+								color: "orange";
+								font.pixelSize: 20;
+							}
+						}
+
+						MouseArea {
+							anchors.fill: parent;
+							hoverEnabled: true;
+							propagateComposedEvents: true;	
+
+							onPressed: {
+								installApp(appVersions.stable, appRepositoryUrl)
+							}
+
+							onEntered: {
+								parent.color = colors.darkBackground3;
+							}
+
+							onExited: {
+								parent.color = colors.darkBackground2;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+
+	function getVersionsCount() {
+		// print(Object.keys(appVersions))
+		return Object.keys(appVersions).length;
+	}
+	function getVersionInformation(index) {
+		return {
+			name: Object.keys(appVersions)[index],
+			url: appVersions[Object.keys(appVersions)[index]]
+		}
+	}
 }
