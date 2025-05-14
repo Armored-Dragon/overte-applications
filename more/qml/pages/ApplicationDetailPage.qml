@@ -131,46 +131,51 @@ Rectangle {
 				width: parent.width;
 				Layout.fillHeight: true;
 
-				Repeater {
-					model: Object.keys(appVersions).length;
-					delegate: Rectangle {
-						property string appVersion: Object.keys(appVersions)[index];
-						property string appUrl: appVersions[Object.keys(appVersions)[index]];
-						width: parent.width;
-						height: 50;
-						color: colors.darkBackground2;
+				Column {
+					width: parent.width;
+					height: parent.height;
 
-						RowLayout {
+					Repeater {
+						model: Object.keys(appVersions).length;
+						delegate: Rectangle {
+							property string appVersion: Object.keys(appVersions)[index];
+							property string appUrl: appVersions[Object.keys(appVersions)[index]];
 							width: parent.width;
 							height: 50;
+							color: colors.darkBackground2;
 
-							Text {
-								text: appVersion;
-								color: "white";
+							RowLayout {
+								width: parent.width;
+								height: 50;
+
+								Text {
+									text: appVersion;
+									color: "white";
+								}
+
+								Text {
+									text: appUrl;
+									color: "orange";
+									font.pixelSize: 20;
+								}
 							}
 
-							Text {
-								text: appUrl;
-								color: "orange";
-								font.pixelSize: 20;
-							}
-						}
+							MouseArea {
+								anchors.fill: parent;
+								hoverEnabled: true;
+								propagateComposedEvents: true;	
 
-						MouseArea {
-							anchors.fill: parent;
-							hoverEnabled: true;
-							propagateComposedEvents: true;	
+								onPressed: {
+									installApp(appVersions.stable, appRepositoryUrl)
+								}
 
-							onPressed: {
-								installApp(appVersions.stable, appRepositoryUrl)
-							}
+								onEntered: {
+									parent.color = colors.darkBackground3;
+								}
 
-							onEntered: {
-								parent.color = colors.darkBackground3;
-							}
-
-							onExited: {
-								parent.color = colors.darkBackground2;
+								onExited: {
+									parent.color = colors.darkBackground2;
+								}
 							}
 						}
 					}
