@@ -12,6 +12,7 @@ Rectangle {
 	property string appAuthor: "";
 	property string appRepositoryName: "";
 	property string appRepositoryUrl: "";
+	property string appRepository: "";
 	property var appVersions: {};
 	property string appIcon: "";
 
@@ -85,7 +86,6 @@ Rectangle {
 					buttonText: "Install";
 					buttonColor: colors.buttonSafe;
 					onClickedFunc: () => { appVersionsElement.visible = true; appDetailsElement.visible = false; }
-					// onClickedFunc: () => { installApp(appVersions.stable, appRepositoryUrl) }
 				}
 				CustomButton {
 					buttonText: "Remove";
@@ -95,7 +95,7 @@ Rectangle {
 				CustomButton {
 					buttonText: "View Repository";
 					buttonColor: colors.button;
-					// TODO
+					onClickedFunc: () => { openAppRepository(appRepositoryUrl) }
 				}
 			}
 

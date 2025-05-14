@@ -125,6 +125,10 @@ function onMessageFromQML(event) {
 		case "uninstallApp":
 			apps.remove(event.appUrl, event.baseUrl);
 			break;
+		case "openAppRepository":
+			debugLog(event);
+			Window.openUrl(event.repositoryUrl);
+			break;
 	}
 }
 
