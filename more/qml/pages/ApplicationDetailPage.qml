@@ -21,7 +21,7 @@ Rectangle {
 	color: "transparent";
 
 	Item {
-		visible: false;
+		visible: true;
 		width: parent.width - 10;
 		height: parent.height - 10;
 		anchors.centerIn: parent;
@@ -95,7 +95,7 @@ Rectangle {
 				CustomButton {
 					buttonText: "View Repository";
 					buttonColor: colors.button;
-					onClickedFunc: () => { openAppRepository(appRepositoryUrl) }
+					onClickedFunc: () => { openAppRepository(appRepository) }
 				}
 			}
 
@@ -116,7 +116,7 @@ Rectangle {
 
 	// App version selection
 	Item {
-		visible: true;
+		visible: false;
 		width: parent.width - 10;
 		height: parent.height - 10;
 		anchors.centerIn: parent;

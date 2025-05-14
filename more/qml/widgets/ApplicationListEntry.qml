@@ -12,6 +12,7 @@ Rectangle {
 	property string appAuthor: "";
 	property string appRepositoryName: "";
 	property string appRepositoryUrl: "";
+	property string appRepository: "";
 	property var appVersions: {};
 	property string appIcon: "";
 
@@ -105,8 +106,10 @@ Rectangle {
 				appAuthor,
 				appRepositoryName,
 				appRepositoryUrl,
+				appRepository,
 				appIcon,
-				appVersions
+				appVersions,
+				
 			)
 		}
 

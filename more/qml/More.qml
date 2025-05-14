@@ -102,6 +102,7 @@ Rectangle {
 				appAuthor,
 				appRepositoryName,
 				appRepositoryUrl,
+				appRepository,
 				appIcon,
 				appVersions) 
 	{
@@ -113,6 +114,7 @@ Rectangle {
 		applicationDetailPage.appAuthor = appAuthor;
 		applicationDetailPage.appRepositoryName = appRepositoryName;
 		applicationDetailPage.appRepositoryUrl = appRepositoryUrl;
+		applicationDetailPage.appRepository = appRepository;
 		applicationDetailPage.appIcon = appIcon;
 		applicationDetailPage.appVersions = appVersions,
 
