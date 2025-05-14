@@ -12,6 +12,7 @@ Rectangle {
 	property string appAuthor: "";
 	property string appRepositoryName: "";
 	property string appRepositoryUrl: "";
+	property string appRepository: "";
 	property var appVersions: {};
 	property string appIcon: "";
 
@@ -48,8 +49,14 @@ Rectangle {
 					icon: appIcon;
 				}
 
+				Item {
+					width: 10;
+					height: 1;
+				}
+
 				Column {
 					width: parent.width;
+
 					Text {
 						text: appName;
 						color: "white";
@@ -79,7 +86,6 @@ Rectangle {
 					buttonText: "Install";
 					buttonColor: colors.buttonSafe;
 					onClickedFunc: () => { appVersionsElement.visible = true; appDetailsElement.visible = false; }
-					// onClickedFunc: () => { installApp(appVersions.stable, appRepositoryUrl) }
 				}
 				CustomButton {
 					buttonText: "Remove";
@@ -89,7 +95,7 @@ Rectangle {
 				CustomButton {
 					buttonText: "View Repository";
 					buttonColor: colors.button;
-					// TODO
+					onClickedFunc: () => { openAppRepository(appRepositoryUrl) }
 				}
 			}
 
@@ -131,46 +137,51 @@ Rectangle {
 				width: parent.width;
 				Layout.fillHeight: true;
 
-				Repeater {
-					model: Object.keys(appVersions).length;
-					delegate: Rectangle {
-						property string appVersion: Object.keys(appVersions)[index];
-						property string appUrl: appVersions[Object.keys(appVersions)[index]];
-						width: parent.width;
-						height: 50;
-						color: colors.darkBackground2;
+				Column {
+					width: parent.width;
+					height: parent.height;
 
-						RowLayout {
+					Repeater {
+						model: Object.keys(appVersions).length;
+						delegate: Rectangle {
+							property string appVersion: Object.keys(appVersions)[index];
+							property string appUrl: appVersions[Object.keys(appVersions)[index]];
 							width: parent.width;
 							height: 50;
+							color: colors.darkBackground2;
 
-							Text {
-								text: appVersion;
-								color: "white";
+							RowLayout {
+								width: parent.width;
+								height: 50;
+
+								Text {
+									text: appVersion;
+									color: "white";
+								}
+
+								Text {
+									text: appUrl;
+									color: "orange";
+									font.pixelSize: 20;
+								}
 							}
 
-							Text {
-								text: appUrl;
-								color: "orange";
-								font.pixelSize: 20;
-							}
-						}
+							MouseArea {
+								anchors.fill: parent;
+								hoverEnabled: true;
+								propagateComposedEvents: true;	
 
-						MouseArea {
-							anchors.fill: parent;
-							hoverEnabled: true;
-							propagateComposedEvents: true;	
+								onPressed: {
+									installApp(appVersions.stable, appRepositoryUrl)
+								}
 
-							onPressed: {
-								installApp(appVersions.stable, appRepositoryUrl)
-							}
+								onEntered: {
+									parent.color = colors.darkBackground3;
+								}
 
-							onEntered: {
-								parent.color = colors.darkBackground3;
-							}
-
-							onExited: {
-								parent.color = colors.darkBackground2;
+								onExited: {
+									parent.color = colors.darkBackground2;
+								}
 							}
 						}
 					}

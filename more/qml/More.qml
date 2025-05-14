@@ -73,6 +73,7 @@ Rectangle {
 				appDescription: appList[index].appDescription;
 				appRepositoryName: appList[index].appRepositoryName;
 				appRepositoryUrl: appList[index].appRepositoryUrl;
+				appRepository: appList[index].appRepository;
 				appVersions: appList[index].appScriptVersions;
 				}
 			}
@@ -141,6 +142,10 @@ Rectangle {
 
 	function uninstallApp(appUrl, baseUrl) {
 		toScript({type: "uninstallApp", appUrl, baseUrl});
+	}
+
+	function openAppRepository(repositoryUrl) {
+		toScript({type: "openAppRepository", repositoryUrl});
 	}
 
 	// Messages from script

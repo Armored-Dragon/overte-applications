@@ -125,6 +125,10 @@ function onMessageFromQML(event) {
 		case "uninstallApp":
 			apps.remove(event.appUrl, event.baseUrl);
 			break;
+		case "openAppRepository":
+			debugLog(event);
+			Window.openUrl(event.repositoryUrl);
+			break;
 	}
 }
 
@@ -166,10 +170,14 @@ let repos = {
 		// TODO: Versioning
 
 		const formattedArrayOfApplicationsFromRepository = repositoryContent.application_list.map((applicationEntry, index) => {
+			if (util.isValidUrl(applicationEntry.appIcon) === false) {
+				debugLog(`${applicationEntry.appName} icon is relative.`);
+				applicationEntry.appIcon = `${repositoryContent.base_url}/${applicationEntry.appBaseDirectory}/${applicationEntry.appIcon}`;
+			}
 			return {
 				...applicationEntry,
 				appRepositoryName: repositoryContent.title,
-				appRepositoryUrl: repositoryContent.base_url
+				appRepositoryUrl: repositoryContent.base_url,
 			}
 		});
 

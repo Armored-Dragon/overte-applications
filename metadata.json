@@ -5,26 +5,30 @@
 	"application_list": [
 		{
 			"appName": "Soulja",
+			"appBaseDirectory": "soulja",
 			"appScriptVersions": {
-				"stable": "soulja/soulja.js"
+				"stable": "soulja.js"
 			},
-			"appIcon": "img/icon_white.png",
+			"appIcon": "img/icon_white.svg",
 			"appDescription": "SOULJA BOY TELL 'EM!\nPress X to play the iconic line by one-shot wonder Soulja boy!",
 			"appAuthor": "Armored Dragon",
 			"appAgeMaturity": "EVERYONE",
-			"appCategory": "ENTERTAINMENT"
+			"appCategory": "ENTERTAINMENT",
+			"appRepository": "https://github.com/Armored-Dragon/overte-applications"
 		},
 		{
 			"appName": "More",
+			"appBaseDirectory": "more",
 			"appScriptVersions": {
-				"stable": "more/more.js",
-				"testVersion": "more/more.js"
+				"stable": "more.js",
+				"testVersion": "more.js"
 			},
-			"appIcon": "img/icon_white.png",
+			"appIcon": "img/icon_white.svg",
 			"appDescription": "More application with more features!",
 			"appAuthor": "Armored Dragon",
 			"appAgeMaturity": "EVERYONE",
-			"appCategory": "UTILITY"
+			"appCategory": "UTILITY",
+			"appRepository": "https://github.com/Armored-Dragon/overte-applications"
 		}
 	]
 }
