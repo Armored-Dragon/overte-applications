@@ -17,7 +17,8 @@
 		{
 			"appName": "More",
 			"appScriptVersions": {
-				"stable": "more/more.js"
+				"stable": "more/more.js",
+				"testVersion": "more/more.js"
 			},
 			"appIcon": "img/icon_white.png",
 			"appDescription": "More application with more features!",
