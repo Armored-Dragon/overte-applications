@@ -48,8 +48,14 @@ Rectangle {
 					icon: appIcon;
 				}
 
+				Item {
+					width: 10;
+					height: 1;
+				}
+
 				Column {
 					width: parent.width;
+
 					Text {
 						text: appName;
 						color: "white";
