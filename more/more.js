@@ -152,38 +152,36 @@ let repos = {
 		repos.loadRepositoriesFromStorage();
 		repos.applications = [];
 
-		for (let i = 0; repos.repositories.length > i; i++) {
-			const targetRepository = repos.repositories[i];
-			const rawRepositoryContent = await repos.fetchRepositoryContent(targetRepository);
-			rawRepositoryContent.application_list.forEach((entry) => { debugLog(entry); repos.applications.push(entry) });
-		}
+		for (let i = 0; repos.repositories.length > i && 99999 > i; i++) {
+			// For each repository we have saved...
+			let repositoryMetadata = await repos.fetchRepositoryContent(repos.repositories[i]);
 
-		ui.sendAppListToQML(repos.applications);
-		ui.sendRepositoryListToQML(repos.applications);
-		debugLog(repos.applications)
-		debugLog(`Finished fetching all saved repositories.`);
+			for (let i = 0; repositoryMetadata.applicationList.length > i && 9999999 > i; i++) {
+				// For each app in the repository...
+				let app = repositoryMetadata.applicationList[i];
+
+				app = repos._embedRepositoryConstants(app, repositoryMetadata);
+				app = repos._formatAppUrls(app);
+
+				repos.applications.push(app);
+			}
+			debugLog(`Finished formatting repository "${repositoryMetadata.title}".`);
+		}
+		debugLog(`Finished fetching all repositories.`);
+
+		ui.sendAppListToQML();
+		ui.sendRepositoryListToQML();
+
+		debugLog(repos.applications);
+
+		debugLog(`Finished sending repositories to UI.`);
+		return true;
 	},
 	fetchRepositoryContent: async (url) => {
 		let repositoryContent = await util.request(url);
 		repositoryContent = util.toJSON(repositoryContent);
 
 		// TODO: Versioning
-
-		const formattedArrayOfApplicationsFromRepository = repositoryContent.application_list.map((applicationEntry, index) => {
-			if (util.isValidUrl(applicationEntry.appIcon) === false) {
-				debugLog(`${applicationEntry.appName} icon is relative.`);
-				applicationEntry.appIcon = `${repositoryContent.base_url}/${applicationEntry.appBaseDirectory}/${applicationEntry.appIcon}`;
-			}
-			return {
-				...applicationEntry,
-				appRepositoryName: repositoryContent.title,
-				appRepositoryUrl: repositoryContent.base_url,
-			}
-		});
-
-		repositoryContent.application_list = formattedArrayOfApplicationsFromRepository;
-
-		debugLog(repositoryContent);
 
 		return repositoryContent;
 	},
@@ -220,7 +218,7 @@ let repos = {
 		repositoryContent.applications.forEach((entry) => repos.applications.push(entry));
 
 		debugLog(repos.applications);
-		ui.sendAppListToQML(repos.applications);
+		ui.sendAppListToQML();
 	},
 	removeRepository: (url) => {
 		// Check if we have the repository in settings
@@ -229,10 +227,10 @@ let repos = {
 
 	},
 	isRepositoryValid: (repositoryObject) => {
-		if (!repositoryObject.VERSION || repositoryObject.VERSION > repos.maxVersion) return false;
+		if (!repositoryObject.version || repositoryObject.version > repos.maxVersion) return false;
 		if (!repositoryObject.title) return false;
-		if (!repositoryObject.base_url) return false;
-		if (!repositoryObject.application_list) return false;
+		if (!repositoryObject.baseApiUrl) return false;
+		if (!repositoryObject.applicationList) return false;
 
 		return true;
 	},
@@ -241,6 +239,34 @@ let repos = {
 	},
 	loadRepositoriesFromStorage: () => {
 		repos.repositories = Settings.getValue(settingsRepositoryListName, []);
+	},
+	_embedRepositoryConstants: (app, repositoryMetadata) => {
+		app.repository = {};
+
+		app.repository.baseApiUrl = repositoryMetadata.baseApiUrl;
+		app.repository.baseRepositoryUrl = repositoryMetadata.baseRepositoryUrl; // TODO: Change this back to repository homepage
+		app.repository.title = repositoryMetadata.title;
+
+		return app;
+	},
+	_formatAppUrls: (app) => {
+		if (util.isValidUrl(app.appIcon) === false) {
+			// Application Icon
+			debugLog(`"${app.appName}" icon is relative.`);
+			app.appIcon = `${app.repository.baseApiUrl}/${app.appBaseDirectory}/${app.appIcon}`;
+		}
+
+		Object.keys(app.appScriptVersions).forEach((appVersion) => {
+			// Application versions
+			let appVersionUrl = app.appScriptVersions[appVersion];
+			debugLog(appVersionUrl);
+			if (util.isValidUrl(appVersionUrl) === false) {
+				debugLog(`"${appVersionUrl}" is relative.`);
+				app.appScriptVersions[appVersion] = `${app.repository.baseApiUrl}/${app.appBaseDirectory}/${appVersionUrl}`;
+			}
+		});
+
+		return app;
 	}
 }
 
@@ -323,13 +349,16 @@ let apps = {
 		apps.installedApps = Settings.getValue(settingsAppListName, []);
 		return apps.installedApps;
 	},
-	install: (url, baseUrl) => {
+	install: (app, version) => {
+		let url = app.appScriptVersions[version];
+
+		debugLog(`"${version}".`);
 		debugLog(`Installing "${url}".`);
 
 		if (util.isValidUrl(url) === false) {
 			// Not a url, handle this as a relative path.
 			debugLog(`Handling link as a relative url.`);
-			url = `${baseUrl}/${url}`;
+			url = `${app.appRepositoryUrl}/${app.appBaseDirectory}/${url}`;
 			debugLog(`Url was changed to "${url}`);
 		}
 
@@ -386,12 +415,13 @@ let apps = {
 }
 
 let ui = {
-	sendAppListToQML: (appList) => {
-		sendMessageToQML({ type: "appList", appList: appList });
+	sendAppListToQML: () => {
+		sendMessageToQML({ type: "appList", appList: repos.applications });
 		return;
 	},
 	sendRepositoryListToQML: () => {
 		let formattedListOfRepositories = repos.repositories.map((entry) => { return { entryText: entry } });
+
 		sendMessageToQML({
 			type: "repositoryList", repositoryList: formattedListOfRepositories
 		});

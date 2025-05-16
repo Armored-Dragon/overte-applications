@@ -10,6 +10,7 @@ Rectangle {
 	signal sendToScript(var message);
 	property var appList: [];
 	property var repositoryList: [];
+	property int focusedAppIndex: -1;
 
 	Colors {
 		id: colors;
@@ -63,19 +64,7 @@ Rectangle {
 
 			Repeater {
 				model: appList.length;
-				delegate: ApplicationListEntry {
-				appName: appList[index].appName;
-				appIcon: appList[index].appIcon;
-				appAuthor: appList[index].appAuthor;
-				appCodeMaturity: appList[index].appCodeMaturity;
-				appCategory: appList[index].appCategory;
-				appAgeMaturity: appList[index].appAgeMaturity;
-				appDescription: appList[index].appDescription;
-				appRepositoryName: appList[index].appRepositoryName;
-				appRepositoryUrl: appList[index].appRepositoryUrl;
-				appRepository: appList[index].appRepository;
-				appVersions: appList[index].appScriptVersions;
-				}
+				delegate: ApplicationListEntry { }
 			}
 		}
 	}
@@ -93,31 +82,7 @@ Rectangle {
 		entryList: repositoryList;
 	}
 
-	function showAppDetailPage(
-				appName,
-				appCategory,
-				appCodeMaturity,
-				appAgeMaturity,
-				appDescription,
-				appAuthor,
-				appRepositoryName,
-				appRepositoryUrl,
-				appRepository,
-				appIcon,
-				appVersions) 
-	{
-		applicationDetailPage.appName = appName;
-		applicationDetailPage.appCategory = appCategory;
-		applicationDetailPage.appCodeMaturity = appCodeMaturity;
-		applicationDetailPage.appAgeMaturity = appAgeMaturity;
-		applicationDetailPage.appDescription = appDescription;
-		applicationDetailPage.appAuthor = appAuthor;
-		applicationDetailPage.appRepositoryName = appRepositoryName;
-		applicationDetailPage.appRepositoryUrl = appRepositoryUrl;
-		applicationDetailPage.appRepository = appRepository;
-		applicationDetailPage.appIcon = appIcon;
-		applicationDetailPage.appVersions = appVersions,
-
+	function showAppDetailPage() {
 		hideAllPages();
 		applicationDetailPage.visible = true;
 	}

@@ -1,8 +1,9 @@
 {
-	"VERSION": 2,
-	"title": "Armored Dragon",
-	"base_url": "https://raw.githubusercontent.com/Armored-Dragon/overte-applications/master",
-	"application_list": [
+	"version": 2,
+	"title": "AD Repository",
+	"baseApiUrl": "https://raw.githubusercontent.com/Armored-Dragon/overte-applications/master",
+	"baseRepositoryUrl": "https://github.com/Armored-Dragon/overte-applications",
+	"applicationList": [
 		{
 			"appName": "Soulja",
 			"appBaseDirectory": "soulja",
@@ -13,8 +14,7 @@
 			"appDescription": "SOULJA BOY TELL 'EM!\nPress X to play the iconic line by one-shot wonder Soulja boy!",
 			"appAuthor": "Armored Dragon",
 			"appAgeMaturity": "EVERYONE",
-			"appCategory": "ENTERTAINMENT",
-			"appRepository": "https://github.com/Armored-Dragon/overte-applications"
+			"appCategory": "ENTERTAINMENT"
 		},
 		{
 			"appName": "More",
@@ -27,8 +27,7 @@
 			"appDescription": "More application with more features!",
 			"appAuthor": "Armored Dragon",
 			"appAgeMaturity": "EVERYONE",
-			"appCategory": "UTILITY",
-			"appRepository": "https://github.com/Armored-Dragon/overte-applications"
+			"appCategory": "UTILITY"
 		}
 	]
 }
