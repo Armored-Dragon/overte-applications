@@ -13,6 +13,7 @@ Rectangle {
 	property string appRepositoryName: "";
 	property string appRepositoryUrl: "";
 	property string appRepository: "";
+	property string appDirectory: "";
 	property var appVersions: {};
 	property string appIcon: "";
 
@@ -58,22 +59,22 @@ Rectangle {
 					width: parent.width;
 
 					Text {
-						text: appName;
+						text: appList[focusedAppIndex].appName;
 						color: "white";
 						font.pixelSize: 20;
 					}
 					Text {
-						text: appCategory;
+						text: appList[focusedAppIndex].appCategory;
 						color: "gray";
 						font.pixelSize: 16;
 					}
 					Text {
-						text: appAgeMaturity;
+						text: appList[focusedAppIndex].appAgeMaturity;
 						color: "gray";
 						font.pixelSize: 16;
 					}
 					Text {
-						text: appCodeMaturity;
+						text: appList[focusedAppIndex].appCodeMaturity;
 						color: "gray";
 						font.pixelSize: 16;
 					}
@@ -90,7 +91,7 @@ Rectangle {
 				CustomButton {
 					buttonText: "Remove";
 					buttonColor: colors.buttonDanger;
-					onClickedFunc: () => { uninstallApp(appVersions.stable, appRepositoryUrl) }
+					onClickedFunc: () => { uninstallApp(appVersions.stable, appDirectory + "/" + appRepositoryUrl) }
 				}
 				CustomButton {
 					buttonText: "View Repository";
@@ -104,7 +105,7 @@ Rectangle {
 				height: 1;
 
 				Text {
-					text: appDescription;
+					text: appList[focusedAppIndex].appDescription;
 					color: "gray";
 					font.pixelSize: 16;
 					wrapMode: Text.Wrap;
@@ -142,10 +143,10 @@ Rectangle {
 					height: parent.height;
 
 					Repeater {
-						model: Object.keys(appVersions).length;
+						model: Object.keys(appList[focusedAppIndex].appScriptVersions).length;
 						delegate: Rectangle {
-							property string appVersion: Object.keys(appVersions)[index];
-							property string appUrl: appVersions[Object.keys(appVersions)[index]];
+							property string appVersion: Object.keys(appList[focusedAppIndex].appScriptVersions)[index];
+							property string appUrl: appList[focusedAppIndex].appScriptVersions[Object.keys(appList[focusedAppIndex].appScriptVersions)[index]];
 							width: parent.width;
 							height: 50;
 							color: colors.darkBackground2;
@@ -172,7 +173,7 @@ Rectangle {
 								propagateComposedEvents: true;	
 
 								onPressed: {
-									installApp(appVersions.stable, appRepositoryUrl)
+									installApp(appList[focusedAppIndex], appVersion)
 								}
 
 								onEntered: {
@@ -193,7 +194,7 @@ Rectangle {
 
 	function getVersionsCount() {
 		// print(Object.keys(appVersions))
-		return Object.keys(appVersions).length;
+		return Object.keys(appList[focusedAppIndex].appVersions).length;
 	}
 	function getVersionInformation(index) {
 		return {

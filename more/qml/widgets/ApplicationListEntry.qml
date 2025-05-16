@@ -3,25 +3,11 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.11
 
 Rectangle {
-	property bool isActive: false;
-	property string appName: "";
-	property string appCategory: "";
-	property string appCodeMaturity: "";
-	property string appAgeMaturity: "";
-	property string appDescription: "";
-	property string appAuthor: "";
-	property string appRepositoryName: "";
-	property string appRepositoryUrl: "";
-	property string appRepository: "";
-	property var appVersions: {};
-	property string appIcon: "";
-
 	readonly property var maturityColors: {
 		"STABLE": "gray",
 		"BETA": "lightblue",
 		"ALPHA": "yellow"
-	}  
-
+	}
 
 	width: parent.width;
 	height: 75;
@@ -44,13 +30,13 @@ Rectangle {
 			Layout.leftMargin: 10;
 
 			Text {
-				text: appName;
+				text: appList[index].appName;
 				color: "white";
 				font.pixelSize: 20;
 			}
 
 			Text {
-				text: "By: " + appAuthor;
+				text: "By: " + appList[index].appAuthor;
 				color: "gray";
 				font.pixelSize: 18;
 			}
@@ -74,9 +60,9 @@ Rectangle {
 			height: parent.height - 50;
 
 			Text {
-				text: appCodeMaturity;
+				text: appList[index].appCodeMaturity;
 				font.pixelSize: 16;
-				color: maturityColors[appCodeMaturity];
+				color: maturityColors[appList[index].appCodeMaturity];
 			}
 
 			// Pad
@@ -97,20 +83,8 @@ Rectangle {
 		propagateComposedEvents: true;	
 
 		onPressed: {
-			showAppDetailPage(
-				appName,
-				appCategory,
-				appCodeMaturity,
-				appAgeMaturity,
-				appDescription,
-				appAuthor,
-				appRepositoryName,
-				appRepositoryUrl,
-				appRepository,
-				appIcon,
-				appVersions,
-				
-			)
+			showAppDetailPage();
+			focusedAppIndex = index;
 		}
 
 		onEntered: {
@@ -125,8 +99,8 @@ Rectangle {
 
 	Behavior on color {
 		ColorAnimation {
-			duration: 50
-			easing.type: Easing.InOutCubic
+			duration: 50;
+			easing.type: Easing.InOutCubic;
 		}
 	}
 }
