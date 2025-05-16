@@ -20,7 +20,7 @@ Rectangle {
 		// Application icon
 		AppImage {
 			Layout.leftMargin: 10;
-			icon: appIcon;
+			icon: appList[index].appIcon;
 		}
 
 		// Application information
@@ -58,12 +58,6 @@ Rectangle {
 			Layout.fillHeight: true;
 			Layout.leftMargin: 10;
 			height: parent.height - 50;
-
-			Text {
-				text: appList[index].appCodeMaturity;
-				font.pixelSize: 16;
-				color: maturityColors[appList[index].appCodeMaturity];
-			}
 
 			// Pad
 			Item {

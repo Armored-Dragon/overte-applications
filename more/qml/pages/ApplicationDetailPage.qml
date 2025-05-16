@@ -4,19 +4,6 @@ import QtQuick.Layouts 1.11
 import "../widgets/"
 
 Rectangle {
-	property string appName: "";
-	property string appCategory: "";
-	property string appCodeMaturity: "";
-	property string appAgeMaturity: "";
-	property string appDescription: "";
-	property string appAuthor: "";
-	property string appRepositoryName: "";
-	property string appRepositoryUrl: "";
-	property string appRepository: "";
-	property string appDirectory: "";
-	property var appVersions: {};
-	property string appIcon: "";
-
 	width: parent.width;
 	height: parent.height;
 	color: "transparent";
@@ -47,7 +34,7 @@ Rectangle {
 
 				AppImage {
 					imageSize: 100;
-					icon: appIcon;
+					icon: appList[focusedAppIndex] && appList[focusedAppIndex].appIcon || "";
 				}
 
 				Item {
@@ -59,22 +46,17 @@ Rectangle {
 					width: parent.width;
 
 					Text {
-						text: appList[focusedAppIndex].appName;
+						text: appList[focusedAppIndex] && appList[focusedAppIndex].appName || "";
 						color: "white";
 						font.pixelSize: 20;
 					}
 					Text {
-						text: appList[focusedAppIndex].appCategory;
+						text: appList[focusedAppIndex] && appList[focusedAppIndex].appCategory || "";
 						color: "gray";
 						font.pixelSize: 16;
 					}
 					Text {
-						text: appList[focusedAppIndex].appAgeMaturity;
-						color: "gray";
-						font.pixelSize: 16;
-					}
-					Text {
-						text: appList[focusedAppIndex].appCodeMaturity;
+						text: appList[focusedAppIndex] && appList[focusedAppIndex].appAgeMaturity || "";
 						color: "gray";
 						font.pixelSize: 16;
 					}
@@ -105,7 +87,7 @@ Rectangle {
 				height: 1;
 
 				Text {
-					text: appList[focusedAppIndex].appDescription;
+					text: appList[focusedAppIndex] && appList[focusedAppIndex].appDescription || "";
 					color: "gray";
 					font.pixelSize: 16;
 					wrapMode: Text.Wrap;
@@ -143,7 +125,7 @@ Rectangle {
 					height: parent.height;
 
 					Repeater {
-						model: Object.keys(appList[focusedAppIndex].appScriptVersions).length;
+						model: Object.keys(appList[focusedAppIndex] && appList[focusedAppIndex].appScriptVersions || []).length;
 						delegate: Rectangle {
 							property string appVersion: Object.keys(appList[focusedAppIndex].appScriptVersions)[index];
 							property string appUrl: appList[focusedAppIndex].appScriptVersions[Object.keys(appList[focusedAppIndex].appScriptVersions)[index]];
