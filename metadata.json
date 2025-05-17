@@ -14,7 +14,8 @@
 			"appDescription": "SOULJA BOY TELL 'EM!\nPress X to play the iconic line by one-shot wonder Soulja boy!",
 			"appAuthor": "Armored Dragon",
 			"appAgeMaturity": "EVERYONE",
-			"appCategory": "ENTERTAINMENT"
+			"appCategory": "ENTERTAINMENT",
+			"appHomeUrl": null
 		},
 		{
 			"appName": "More",
@@ -27,7 +28,8 @@
 			"appDescription": "More application with more features!",
 			"appAuthor": "Armored Dragon",
 			"appAgeMaturity": "EVERYONE",
-			"appCategory": "UTILITY"
+			"appCategory": "UTILITY",
+			"appHomeUrl": null
 		}
 	]
 }

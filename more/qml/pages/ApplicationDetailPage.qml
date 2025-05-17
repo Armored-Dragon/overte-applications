@@ -73,12 +73,12 @@ Rectangle {
 				CustomButton {
 					buttonText: "Remove";
 					buttonColor: colors.buttonDanger;
-					onClickedFunc: () => { uninstallApp(appVersions.stable, appDirectory + "/" + appRepositoryUrl) }
+					onClickedFunc: () => { uninstallApp(appList[focusedAppIndex].installedUrl) }
 				}
 				CustomButton {
 					buttonText: "View Repository";
 					buttonColor: colors.button;
-					onClickedFunc: () => { openAppRepository(appRepository) }
+					onClickedFunc: () => { openAppRepository(appList[focusedAppIndex].appHomeUrl || appList[focusedAppIndex].repository.baseRepositoryUrl) }
 				}
 			}
 

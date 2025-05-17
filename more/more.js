@@ -166,6 +166,7 @@ let repos = {
 
 				app = repos._embedRepositoryConstants(app, repositoryMetadata);
 				app = repos._formatAppUrls(app);
+				app = repos._checkIfInstalled(app);
 
 				repos.applications.push(app);
 			}
@@ -289,6 +290,27 @@ let repos = {
 	_saveRepositoriesToSettings: () => {
 		debugLog(`Saving repositories list to settings.`)
 		Settings.setValue(settingsRepositoryListName, repos.repositories);
+	},
+	_checkIfInstalled: (app) => {
+		debugLog(`Checking if ${app.appName} is installed.`)
+		app.installedUrl = null;
+		app.isInstalled = false;  // Assume the app is not installed.
+
+		const runningScripts = ScriptDiscoveryService.getRunning();
+		for (let i = 0; Object.keys(app.appScriptVersions).length > i; i++) {
+			// For each of the app versions...
+			const appVersionUrl = app.appScriptVersions[Object.keys(app.appScriptVersions)[i]];
+			for (let k = 0; runningScripts.length > k; k++) {
+				if (appVersionUrl === runningScripts[k].url) {
+					app.installedUrl = appVersionUrl;
+					app.isInstalled = true;
+					break;
+				}
+			}
+			if (app.isInstalled) break;
+		}
+
+		return app;
 	}
 }
 
