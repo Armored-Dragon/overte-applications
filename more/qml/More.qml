@@ -115,6 +115,10 @@ Rectangle {
 		toScript({type: "openAppRepository", repositoryUrl});
 	}
 
+	function onRemoveEntryButton(entryUrl) {
+		toScript({type: "removeRepository", entryUrl});
+	}
+
 	// Messages from script
 	function fromScript(message) {
 		switch (message.type) {

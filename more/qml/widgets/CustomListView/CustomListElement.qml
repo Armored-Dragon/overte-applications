@@ -39,6 +39,8 @@ Item {
 					width: 25;
 					buttonText: "X";
 					visible: canDeleteEntries;
+
+					onClickedFunc: () => { onRemoveEntryButton(entryText) };
 				}
 			}
 		}

@@ -36,6 +36,8 @@ let app = {
 	}
 }
 
+// FIXME: Null / no provided url in adding a repository continues, provide a check to see if there is even a string.
+
 function addAppToToolbar() {
 	// Check if app is on toolbar
 
@@ -90,6 +92,7 @@ function activateToolbarButton() {
 	app.toolbarAppButton.editProperties({ isActive: true });
 	app.tablet.screenChanged.connect(onTabletScreenChanged);
 
+	repos.fetchAllAppsFromSavedRepositories();
 	ui.sendRepositoryListToQML();
 	ui.sendAppListToQML(repos.applications);
 }
@@ -114,6 +117,7 @@ function appShuttingDown() {
 }
 
 function onMessageFromQML(event) {
+	debugLog(event);
 	switch (event.type) {
 		case "addNewRepositoryButtonClicked":
 			let newRepositoryUrl = Window.prompt("Enter the URL of the repository metadata.json file.", "");
@@ -126,8 +130,10 @@ function onMessageFromQML(event) {
 			apps.remove(event.appUrl, event.baseUrl);
 			break;
 		case "openAppRepository":
-			debugLog(event);
 			Window.openUrl(event.repositoryUrl);
+			break;
+		case "removeRepository":
+			repos.removeRepository(event.entryUrl);
 			break;
 	}
 }
@@ -213,18 +219,27 @@ let repos = {
 
 		repos.repositories.push(url);
 
-		Settings.setValue(settingsRepositoryListName, repos.repositories);
+		repos._saveRepositoriesToSettings();
+		repositoryContent.applicationList.forEach((entry) => repos.applications.push(entry));
 
-		repositoryContent.applications.forEach((entry) => repos.applications.push(entry));
-
-		debugLog(repos.applications);
 		ui.sendAppListToQML();
+		ui.sendRepositoryListToQML();
+		repos.fetchAllAppsFromSavedRepositories();
+
 	},
 	removeRepository: (url) => {
-		// Check if we have the repository in settings
-		// Remove from settings
-		// Remove apps from repo from displayed apps
+		if (repos.doWeHaveThisRepositorySaved(url) === false) {
+			debugLog(`"${url}" is not saved in our settings. Doing nothing.`);
+			return;
+		}
 
+		const indexOfRepositoryInSettings = repos.repositories.indexOf(url);
+
+		repos.repositories.splice(indexOfRepositoryInSettings, 1);
+		repos._saveRepositoriesToSettings();
+		repos.fetchAllAppsFromSavedRepositories();
+
+		ui.sendRepositoryListToQML();
 	},
 	isRepositoryValid: (repositoryObject) => {
 		if (!repositoryObject.version || repositoryObject.version > repos.maxVersion) return false;
@@ -267,6 +282,10 @@ let repos = {
 		});
 
 		return app;
+	},
+	_saveRepositoriesToSettings: () => {
+		debugLog(`Saving repositories list to settings.`)
+		Settings.setValue(settingsRepositoryListName, repos.repositories);
 	}
 }
 
