@@ -36,8 +36,6 @@ let app = {
 	}
 }
 
-// FIXME: Null / no provided url in adding a repository continues, provide a check to see if there is even a string.
-
 function addAppToToolbar() {
 	// Check if app is on toolbar
 
@@ -192,6 +190,11 @@ let repos = {
 		return repositoryContent;
 	},
 	installRepository: async (url) => {
+		if (!url) {
+			debugLog(`No URL provided! Nothing to do.`);
+			return;
+		}
+
 		debugLog(`Installing repository: ${url}`);
 
 		url = util.extractUrlFromString(url);
