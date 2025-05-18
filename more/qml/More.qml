@@ -3,6 +3,7 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.3
 import "."
 import "./widgets"
+import "./widgets/CustomButton"
 import "./widgets/CustomListView"
 import "./pages"
 
