@@ -211,6 +211,8 @@ let repos = {
 			return;
 		}
 
+		debugLog(`Installing repository: ${url}`);
+
 		if (url === `https://raw.githubusercontent.com/overte-org/community-apps/refs/heads/master/applications/metadata.js`) {
 			// Trying to install the legacy metadata.js repository
 			repos.repositories.push("https://raw.githubusercontent.com/overte-org/community-apps/refs/heads/master/applications/metadata.js");
@@ -220,8 +222,6 @@ let repos = {
 			repos.fetchAllAppsFromSavedRepositories();
 			return;
 		}
-
-		debugLog(`Installing repository: ${url}`);
 
 		url = util.extractUrlFromString(url);
 		if (url === null) {
@@ -535,7 +535,9 @@ let legacy = {
 
 			// Format the app Icon URL
 			if (formattedApplication.appIcon.indexOf(formattedApplication.appBaseDirectory) > -1) {
-				formattedApplication.appIcon = formattedApplication.appIcon.split('/')[1];
+				let appIconSplit = formattedApplication.appIcon.split('/');
+				appIconSplit.shift();
+				formattedApplication.appIcon = appIconSplit.join(`/`);
 			}
 
 			// Format the appScriptVersions
