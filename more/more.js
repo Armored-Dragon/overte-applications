@@ -4,11 +4,15 @@
 //  Created by Armored Dragon on 5 May 2025.
 //  Copyright 2025 Overte e.V contributors.
 //
-//  ---
+//  This interface application allows users to manage and install apps provided by third party repositories easily.
 //
 //  Distributed under the Apache License, Version 2.0.
 //  See the accompanying file LICENSE or http://www.apache.org/licenses/LICENSE-2.0.html
 //
+
+// TODO: App installed visual on app listing
+// TODO: Normalize pages layout and formatting
+// TODO: Scrollbar for flickable elements
 
 // -------------------------------------------
 // app.js
@@ -511,8 +515,6 @@ let legacy = {
 		response = _trimMetadataVariable(response);
 		response = util.toJSON(response);
 
-		// let formattedApplicationList = [];
-
 		for (let i = 0; response.applications.length > i; i++) {
 			// For each application returned through the response...
 			const app = response.applications[i];
@@ -552,20 +554,10 @@ let legacy = {
 			formattedApplication = repos._formatAppUrls(formattedApplication);
 			formattedApplication = repos._checkIfInstalled(formattedApplication);
 
-			// formattedApplicationList.push(formattedApplication);
 			repos.applications.push(formattedApplication);
 		}
 
 		return;
-
-		// let finalRepositoryResponse = {
-		// 	...repoHeader,
-		// 	applicationList: formattedApplicationList
-		// }
-
-		// At this point we should have a properly formatted response for which we can use our existing functions for.
-
-		// debugLog(finalRepositoryResponse)
 
 		function _trimMetadataVariable(response) {
 			if (response.indexOf("var metadata") == -1) {
@@ -596,6 +588,8 @@ let versioning = {
 repos.fetchAllAppsFromSavedRepositories();
 
 if (Settings.getValue(settingsIsFirstRun, true) === true) {
+	// First run. Install the overte repository.
+	// NOTE: The url provided is parsed and handled differently using the legacy.requestCommunityApps() function.
 	repos.repositories.push("https://raw.githubusercontent.com/overte-org/community-apps/refs/heads/master/applications/metadata.js");
 	repos._saveRepositoriesToSettings();
 }

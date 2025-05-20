@@ -85,6 +85,24 @@ Rectangle {
 		toScript({type: "removeRepository", entryUrl});
 	}
 
+	function onSearchChanged(searchQuery) {
+		for (let i = 0; appList.length > i; i++){
+			// For each of the appList entries...
+
+			var app = appList[i];
+			var appEntry = applicationListPage.children[1].children[0].children[0].children[i];
+			var appNameLowercase = app.appName.toLowerCase();
+			var searchQueryLowercase = searchQuery.toLowerCase();
+
+			if (appNameLowercase.includes(searchQueryLowercase)) {
+				appEntry.visible = true;
+			}
+			else {
+				appEntry.visible = false;
+			}
+		}
+	}
+
 	// Messages from script
 	function fromScript(message) {
 		switch (message.type) {

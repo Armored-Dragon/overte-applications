@@ -23,9 +23,14 @@ ColumnLayout {
 			radius: 10;
 
 			TextField {
+				id: searchArea;
 				placeholderText: "Search...";
 				color: "black";
 				anchors.fill: parent;
+
+				onTextChanged: {
+					onSearchChanged(searchArea.text);
+				}
 
 				background: Rectangle { // Custom background for the TextField
 					color: "transparent" // Make it transparent
