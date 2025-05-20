@@ -104,6 +104,7 @@ const io = Script.require("./lib/io.js");
 
 const settingsRepositoryListName = "overte.more.repositories";
 const settingsAppListName = "overte.more.app";
+const settingsIsFirstRun = "overte.more.isFirstRun";
 
 Script.scriptEnding.connect(appShuttingDown);
 
@@ -153,10 +154,18 @@ let repos = {
 
 	fetchAllAppsFromSavedRepositories: async () => {
 		debugLog(`Fetching all saved repositories.`);
+		let isLegacyInstalled = false;
 		repos.loadRepositoriesFromStorage();
 		repos.applications = [];
 
-		await legacy.requestCommunityApps();
+		const indexOfLegacyRepository = repos.repositories.indexOf("https://raw.githubusercontent.com/overte-org/community-apps/refs/heads/master/applications/metadata.js")
+		if (indexOfLegacyRepository > -1) {
+			// We remove the legacy url here to prevent any further action being taken using this.
+			// This will be inserted back into the array just before we send the list of repositories to the UI
+			isLegacyInstalled = true;
+			await legacy.requestCommunityApps();
+			repos.repositories.splice(indexOfLegacyRepository, 1);
+		}
 
 		for (let i = 0; repos.repositories.length > i && 99999 > i; i++) {
 			// For each repository we have saved...
@@ -175,6 +184,10 @@ let repos = {
 			debugLog(`Finished formatting repository "${repositoryMetadata.title}".`);
 		}
 		debugLog(`Finished fetching all repositories.`);
+
+		if (isLegacyInstalled) {
+			repos.repositories.push(`https://raw.githubusercontent.com/overte-org/community-apps/refs/heads/master/applications/metadata.js`);
+		}
 
 		ui.sendAppListToQML();
 		ui.sendRepositoryListToQML();
@@ -195,6 +208,13 @@ let repos = {
 	installRepository: async (url) => {
 		if (!url) {
 			debugLog(`No URL provided! Nothing to do.`);
+			return;
+		}
+
+		if (url === `https://raw.githubusercontent.com/overte-org/community-apps/refs/heads/master/applications/metadata.js`) {
+			// Trying to install the legacy metadata.js repository
+			repos.repositories.push("https://raw.githubusercontent.com/overte-org/community-apps/refs/heads/master/applications/metadata.js");
+			repos._saveRepositoriesToSettings();
 			return;
 		}
 
@@ -569,3 +589,8 @@ let versioning = {
 }
 
 repos.fetchAllAppsFromSavedRepositories();
+
+if (Settings.getValue(settingsIsFirstRun, true) === true) {
+	repos.repositories.push("https://raw.githubusercontent.com/overte-org/community-apps/refs/heads/master/applications/metadata.js");
+	repos._saveRepositoriesToSettings();
+}

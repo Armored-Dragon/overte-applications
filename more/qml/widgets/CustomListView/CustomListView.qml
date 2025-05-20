@@ -13,18 +13,19 @@ Item {
 
 	property var onAddEntryButtonClickedFunc;
 
-	Rectangle {
-		color: colors.darkBackground2;
-		anchors.fill: parent;
+	Column {
+		width: parent.width;
+		height: parent.height;
 
-		Column {
+		Flickable {
+			contentHeight: Math.min(entryListElement.height, 200);
+			height: 200;
 			width: parent.width;
-			height: 120;
+			clip: true;
 
-			// Entry list
 			Column {
 				width: parent.width;
-				height: parent.height - 25;
+				id: entryListElement;
 
 				Repeater {
 					model: entries.length;
@@ -35,15 +36,14 @@ Item {
 					}
 				}
 			}
+		}
 
-			// Add a entry to the list
-			CustomButton {
-				height: 25;
-				width: parent.width;
-				buttonText: "Add Entry";
+		CustomButton {
+			height: 25;
+			width: parent.width;
+			buttonText: "Add Entry";
 
-				onClickedFunc: onAddEntryButtonClickedFunc;
-			}
+			onClickedFunc: onAddEntryButtonClickedFunc;
 		}
 	}
 }
