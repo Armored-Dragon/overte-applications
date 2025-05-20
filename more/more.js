@@ -179,7 +179,7 @@ let repos = {
 		ui.sendAppListToQML();
 		ui.sendRepositoryListToQML();
 
-		debugLog(repos.applications);
+		// debugLog(repos.applications);
 
 		debugLog(`Finished sending repositories to UI.`);
 		return true;
@@ -280,7 +280,6 @@ let repos = {
 		Object.keys(app.appScriptVersions).forEach((appVersion) => {
 			// Application versions
 			let appVersionUrl = app.appScriptVersions[appVersion];
-			debugLog(appVersionUrl);
 			if (util.isValidUrl(appVersionUrl) === false) {
 				debugLog(`"${appVersionUrl}" is relative.`);
 				app.appScriptVersions[appVersion] = `${app.repository.baseApiUrl}/${app.appBaseDirectory}/${appVersionUrl}`;

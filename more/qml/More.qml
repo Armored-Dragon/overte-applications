@@ -20,67 +20,33 @@ Rectangle {
 	height: parent.height;
 	color: colors.darkBackground1;
 
-	// App list page
-	Column {
-		id: applicationListPage;
+	ColumnLayout {
 		width: parent.width;
+		height: parent.height;
 
-		RowLayout {
-			width: parent.width - 10;
-			x: 5;
-			Layout.alignment: Qt.AlignVCenter;
-			height: 60;
-
-			Rectangle {
-				color: "white";
-				Layout.fillWidth: true;
-				height: parent.height - 20;
-				radius: 10;
-
-				TextField {
-					placeholderText: "Search...";
-					color: "black";
-					anchors.fill: parent;
-
-					background: Rectangle { // Custom background for the TextField
-                        color: "transparent" // Make it transparent
-                    }
-				}
-			}
-
-			CustomButton {
-				height: parent.height - 20;
-				width: 60;
-				buttonText: " O ";
-
-				onClickedFunc: () => { showSettingsPage() }
-			}
+		// App list page
+		ApplicationListPage {
+			id: applicationListPage;
+			visible: true;
 		}
 
-		// Application list
-		Column {
-			width: parent.width - 10;
-			x: 5;
-
-			Repeater {
-				model: appList.length;
-				delegate: ApplicationListEntry { }
-			}
+		// App detail page
+		ApplicationDetailPage {
+			id: applicationDetailPage;
+			visible: false;
+			Layout.fillHeight: true;
 		}
+
+		// App settings page
+		SettingsPage {
+			id: settingsPage;
+			visible: false;
+			entryList: repositoryList;
+			Layout.fillHeight: true;
+		}
+
 	}
 
-	// App detail page
-	ApplicationDetailPage {
-		id: applicationDetailPage;
-		visible: false;
-	}
-
-	// App settings page
-	SettingsPage {
-		id: settingsPage;
-		visible: false;
-		entryList: repositoryList;
-	}
 
 	function showAppDetailPage() {
 		hideAllPages();
