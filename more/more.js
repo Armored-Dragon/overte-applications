@@ -215,6 +215,9 @@ let repos = {
 			// Trying to install the legacy metadata.js repository
 			repos.repositories.push("https://raw.githubusercontent.com/overte-org/community-apps/refs/heads/master/applications/metadata.js");
 			repos._saveRepositoriesToSettings();
+			ui.sendAppListToQML();
+			ui.sendRepositoryListToQML();
+			repos.fetchAllAppsFromSavedRepositories();
 			return;
 		}
 
