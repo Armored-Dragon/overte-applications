@@ -7,11 +7,12 @@ ColumnLayout {
 	width: parent.width;
 	height: parent.height;
 	id: applicationListPage;
+	spacing: 10;
 
 	// Header
 	RowLayout {
-		width: parent.width - 10;
-		x: 5;
+		Layout.margins: 10
+		Layout.bottomMargin: 0;
 		Layout.alignment: Qt.AlignVCenter;
 		height: 60;
 
@@ -43,16 +44,16 @@ ColumnLayout {
 
 	// Scroll area
 	Flickable {
-		width: parent.width - 10;
+		Layout.margins: 10;
+		Layout.topMargin: 0;
 		Layout.fillHeight: true;
-		x: 5;
+		Layout.fillWidth: true;
 		contentHeight: appListColumn.height;
 		clip: true;
 		
 		Column {
 			id: appListColumn
-			width: parent.width - 10;
-			x: 5;
+			width: parent.width;
 
 			Repeater {
 				model: appList.length;
