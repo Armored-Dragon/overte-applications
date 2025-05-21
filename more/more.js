@@ -64,7 +64,6 @@ function toolbarButtonClicked() {
 	}
 	else {
 		activateToolbarButton();
-
 	}
 }
 
@@ -73,17 +72,17 @@ function onTabletScreenChanged(type, newURL) {
 		activateToolbarButton();
 	}
 	else {
-		deactivateToolbarButton();
+		deactivateToolbarButton(false);
 	}
 }
 
-function deactivateToolbarButton() {
+function deactivateToolbarButton(goToHomeScreen = true) {
 	if (app.active === false) return; // Already inactive, ignore.
 
-	app.active = false;
-	app.tablet.gotoHomeScreen();
-	app.toolbarAppButton.editProperties({ isActive: false });
 	app.tablet.screenChanged.disconnect(onTabletScreenChanged);
+	app.active = false;
+	if (goToHomeScreen) app.tablet.gotoHomeScreen();
+	app.toolbarAppButton.editProperties({ isActive: false });
 }
 
 function activateToolbarButton() {
