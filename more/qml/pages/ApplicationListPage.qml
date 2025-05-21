@@ -65,5 +65,15 @@ ColumnLayout {
 				delegate: ApplicationListEntry { }
 			}
 		}
+
+		ScrollBar.vertical: ScrollBar {
+			policy: Qt.ScrollBarAlwaysOn;
+
+			background: Rectangle {
+				color: "transparent";
+				radius: 5;
+				visible: scrollBar.visible;
+			}
+		}
 	}
 }
