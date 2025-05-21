@@ -4,15 +4,20 @@ import QtQuick.Layouts 1.11
 import "../widgets/"
 import "../widgets/CustomListView"
 
-Item {
+ColumnLayout {
 	width: parent.width;
 	height: parent.height;
+	id: root;
+	spacing: 10;
+
 	property var entryList: [""];
 
 	ColumnLayout {
-		width: parent.width - 10;
+		width: parent.width - 20;
 		height: parent.height - 10;
-		anchors.centerIn: parent;
+		Layout.margins: 10
+		Layout.bottomMargin: 0;
+		Layout.alignment: Qt.AlignVCenter;
 
 		CustomButton {
 			height: 40;

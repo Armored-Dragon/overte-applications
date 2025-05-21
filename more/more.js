@@ -11,7 +11,6 @@
 //
 
 // TODO: App installed visual on app listing
-// TODO: Normalize pages layout and formatting
 
 // -------------------------------------------
 // app.js
