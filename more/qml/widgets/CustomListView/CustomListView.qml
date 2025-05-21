@@ -24,7 +24,7 @@ Item {
 			clip: true;
 
 			Column {
-				width: parent.width;
+				width: parent.width - 10;
 				id: entryListElement;
 
 				Repeater {
@@ -34,6 +34,16 @@ Item {
 						canAddEntries: canAddEntries;
 						canDeleteEntries: canDeleteEntries;
 					}
+				}
+			}
+
+			ScrollBar.vertical: ScrollBar {
+				policy: Qt.ScrollBarAlwaysOn;
+
+				background: Rectangle {
+					color: "transparent";
+					radius: 5;
+					visible: scrollBar.visible;
 				}
 			}
 		}
