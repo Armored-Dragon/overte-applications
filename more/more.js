@@ -10,7 +10,14 @@
 //  See the accompanying file LICENSE or http://www.apache.org/licenses/LICENSE-2.0.html
 //
 
-// TODO: App installed visual on app listing
+
+// TODO: Update the application UI when
+// 		- Installing an application
+// 		- Uninstalling an application
+// 		- Adding a repository
+// 		- Removing a repository
+// TODO: List version installed on app page
+// TODO: Allow extra defined links provided by the metadata
 
 // -------------------------------------------
 // app.js
