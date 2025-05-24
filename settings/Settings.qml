@@ -13,6 +13,7 @@ Rectangle {
 	anchors.horizontalCenter: parent.horizontalCenter
 	property var pages: [
 		{name: "General", icon: "../img/overte.svg", targetPage: "hifi/tablet/TabletGeneralPreferences.qml" },
+		{name: "General New", icon: "../img/overte.svg", targetPage: "" },
 		{name: "Graphics", icon: "../img/computer.svg", targetPage: "" }, 
 		{name: "Audio", icon: "../img/volume.svg", targetPage: "hifi/audio/Audio.qml" }, 
 		{name: "Controls", icon: "../img/dpad.svg", targetPage: "hifi/tablet/ControllerSettings.qml" }, 
@@ -48,6 +49,9 @@ Rectangle {
 				}
 			}
 		}
+
+		// General 
+		GeneralSettings {}
 
 		// Graphics 
 		GraphicsSettings {}
