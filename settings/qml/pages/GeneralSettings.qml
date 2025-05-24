@@ -3,6 +3,8 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.3
 import "../"
 
+// TODO: Wrapping on text labels of settings elements
+
 Flickable {
     property var verticalScrollBarWidth: 20;
     property bool hasPresetBeenModified: false;
