@@ -4,6 +4,7 @@ import QtQuick.Layouts 1.3
 import "../"
 
 // TODO: Wrapping on text labels of settings elements
+// TODO: General settings scripting interface?
 
 Flickable {
     property var verticalScrollBarWidth: 20;
