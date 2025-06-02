@@ -10,7 +10,6 @@
 //  See the accompanying file LICENSE or http://www.apache.org/licenses/LICENSE-2.0.html
 //
 
-// TODO: List version installed on app page
 // TODO: Allow extra defined links provided by the metadata
 
 // -------------------------------------------
@@ -449,7 +448,11 @@ let util = {
 let apps = {
 	installedApps: [],
 	getInstalledApps: () => {
-		apps.installedApps = Settings.getValue(settingsAppListName, []);
+		const runningScripts = ScriptDiscoveryService.getRunning().map((item) => item.url);
+
+		// Get the list of apps we are supposed to have installed 
+		apps.installedApps = runningScripts;
+
 		return apps.installedApps;
 	},
 	install: (app, version) => {

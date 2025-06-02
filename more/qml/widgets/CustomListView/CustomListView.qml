@@ -43,7 +43,7 @@ Item {
 				background: Rectangle {
 					color: "transparent";
 					radius: 5;
-					visible: scrollBar.visible;
+					visible: parent.visible;
 				}
 			}
 		}
