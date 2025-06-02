@@ -173,7 +173,6 @@ Rectangle {
 		}
 	}
 
-
 	function getVersionsCount() {
 		// print(Object.keys(appVersions))
 		return Object.keys(appList[focusedAppIndex].appVersions).length;

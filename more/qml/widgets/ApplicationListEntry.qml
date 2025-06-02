@@ -59,6 +59,13 @@ Rectangle {
 			Layout.leftMargin: 10;
 			height: parent.height - 50;
 
+			Text {
+				visible: appList[index].isInstalled;
+				text: "( Installed )";
+				color: "gray";
+				font.pixelSize: 16;
+			}
+
 			// Pad
 			Item {
 				Layout.fillHeight: true;

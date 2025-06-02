@@ -13,18 +13,19 @@ Item {
 
 	property var onAddEntryButtonClickedFunc;
 
-	Rectangle {
-		color: colors.darkBackground2;
-		anchors.fill: parent;
+	ColumnLayout {
+		width: parent.width;
+		height: parent.height;
 
-		Column {
+		Flickable {
+			contentHeight: Math.min(entryListElement.height, 200);
+			Layout.fillHeight: true;
 			width: parent.width;
-			height: 120;
+			clip: true;
 
-			// Entry list
 			Column {
-				width: parent.width;
-				height: parent.height - 25;
+				width: parent.width - 10;
+				id: entryListElement;
 
 				Repeater {
 					model: entries.length;
@@ -36,14 +37,24 @@ Item {
 				}
 			}
 
-			// Add a entry to the list
-			CustomButton {
-				height: 25;
-				width: parent.width;
-				buttonText: "Add Entry";
+			ScrollBar.vertical: ScrollBar {
+				policy: Qt.ScrollBarAlwaysOn;
 
-				onClickedFunc: onAddEntryButtonClickedFunc;
+				background: Rectangle {
+					color: "transparent";
+					radius: 5;
+					visible: scrollBar.visible;
+				}
 			}
+		}
+
+		CustomButton {
+			height: 40;
+			Layout.fillWidth: true;
+			buttonText: "Add Entry";
+
+			onClickedFunc: onAddEntryButtonClickedFunc;
+			Layout.bottomMargin: 10;
 		}
 	}
 }
