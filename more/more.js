@@ -10,16 +10,6 @@
 //  See the accompanying file LICENSE or http://www.apache.org/licenses/LICENSE-2.0.html
 //
 
-
-// TODO: Update the application UI when
-// 		- Installing an application
-// 		- Uninstalling an application
-// 		- Adding a repository
-// 		- Removing a repository
-// TODO: List version installed on app page
-// TODO: Allow extra defined links provided by the metadata
-// TODO: Icons
-
 // -------------------------------------------
 // app.js
 const appSettings = {
@@ -45,6 +35,11 @@ let app = {
 		removeAppFromToolbar();
 	}
 }
+
+ScriptDiscoveryService.scriptCountChanged.connect(() => {
+	repos.updateIfAppIsInstalled();
+	ui.sendAppListToQML();
+});
 
 function addAppToToolbar() {
 	// Check if app is on toolbar
@@ -344,6 +339,33 @@ let repos = {
 		}
 
 		return app;
+	},
+	updateIfAppIsInstalled: () => {
+		// Parse through the existing applications array and just checks to see if an app is installed
+		const runningScripts = ScriptDiscoveryService.getRunning().map((item) => item.url);
+		debugLog(runningScripts)
+
+		for (let i = 0; repos.applications.length > i; i++) {
+			// For each application in the array...
+			let app = repos.applications[i];
+			debugLog(`Checking if ${app.appName} is installed...`);
+
+			app.installedUrl = null;
+			app.isInstalled = false;  // Assume the app is not installed.
+
+			for (let k = 0; Object.keys(app.appScriptVersions).length > k; k++) {
+				// For each of the app versions...
+				const appVersionUrl = app.appScriptVersions[Object.keys(app.appScriptVersions)[k]];
+				if (runningScripts.indexOf(appVersionUrl) > -1) {
+					app.installedUrl = appVersionUrl;
+					app.isInstalled = true;
+					break;
+				}
+			}
+			if (app.isInstalled) break;
+		}
+
+		return true;
 	}
 }
 
@@ -424,7 +446,11 @@ let util = {
 let apps = {
 	installedApps: [],
 	getInstalledApps: () => {
-		apps.installedApps = Settings.getValue(settingsAppListName, []);
+		const runningScripts = ScriptDiscoveryService.getRunning().map((item) => item.url);
+
+		// Get the list of apps we are supposed to have installed 
+		apps.installedApps = runningScripts;
+
 		return apps.installedApps;
 	},
 	install: (app, version) => {
@@ -488,6 +514,7 @@ let apps = {
 		return true;
 	},
 	isAppAlreadyInstalled: (url) => {
+		apps.getInstalledApps();
 		return apps.installedApps.indexOf(url) > -1;
 	}
 }
