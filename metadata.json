@@ -30,6 +30,19 @@
 			"appAgeMaturity": "EVERYONE",
 			"appCategory": "UTILITY",
 			"appHomeUrl": null
+		},
+		{
+			"appName": "Avatars",
+			"appBaseDirectory": "avatars",
+			"appScriptVersions": {
+				"stable": "avatars.js"
+			},
+			"appIcon": "img/icon_white.svg",
+			"appDescription": "Customize your appearance with different avatars. Attach wearables to your avatar.",
+			"appAuthor": "Armored Dragon",
+			"appAgeMaturity": "EVERYONE",
+			"appCategory": "UTILITY",
+			"appHomeUrl": null
 		}
 	]
 }
