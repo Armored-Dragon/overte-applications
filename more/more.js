@@ -18,7 +18,6 @@
 // 		- Removing a repository
 // TODO: List version installed on app page
 // TODO: Allow extra defined links provided by the metadata
-// TODO: Icons
 
 // -------------------------------------------
 // app.js
