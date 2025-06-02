@@ -24,7 +24,7 @@
 				"stable": "more.js",
 				"testVersion": "more.js"
 			},
-			"appIcon": "img/icon_white.svg",
+			"appIcon": "img/icon_white.png",
 			"appDescription": "More application with more features!",
 			"appAuthor": "Armored Dragon",
 			"appAgeMaturity": "EVERYONE",

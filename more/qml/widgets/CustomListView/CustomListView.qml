@@ -13,13 +13,13 @@ Item {
 
 	property var onAddEntryButtonClickedFunc;
 
-	Column {
+	ColumnLayout {
 		width: parent.width;
 		height: parent.height;
 
 		Flickable {
 			contentHeight: Math.min(entryListElement.height, 200);
-			height: 200;
+			Layout.fillHeight: true;
 			width: parent.width;
 			clip: true;
 
@@ -49,11 +49,12 @@ Item {
 		}
 
 		CustomButton {
-			height: 25;
-			width: parent.width;
+			height: 40;
+			Layout.fillWidth: true;
 			buttonText: "Add Entry";
 
 			onClickedFunc: onAddEntryButtonClickedFunc;
+			Layout.bottomMargin: 10;
 		}
 	}
 }

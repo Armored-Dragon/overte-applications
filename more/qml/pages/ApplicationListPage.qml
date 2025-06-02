@@ -40,8 +40,9 @@ ColumnLayout {
 
 		CustomButton {
 			height: parent.height - 20;
-			width: 60;
-			buttonText: " O ";
+			implicitWidth: 55;
+			buttonText: "";
+			buttonIcon: "../../img/menu.svg";
 
 			onClickedFunc: () => { showSettingsPage() }
 		}
