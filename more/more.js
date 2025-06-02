@@ -45,6 +45,11 @@ let app = {
 	}
 }
 
+ScriptDiscoveryService.scriptCountChanged.connect(() => {
+	repos.updateIfAppIsInstalled();
+	ui.sendAppListToQML();
+});
+
 function addAppToToolbar() {
 	// Check if app is on toolbar
 
@@ -343,6 +348,33 @@ let repos = {
 		}
 
 		return app;
+	},
+	updateIfAppIsInstalled: () => {
+		// Parse through the existing applications array and just checks to see if an app is installed
+		const runningScripts = ScriptDiscoveryService.getRunning().map((item) => item.url);
+		debugLog(runningScripts)
+
+		for (let i = 0; repos.applications.length > i; i++) {
+			// For each application in the array...
+			let app = repos.applications[i];
+			debugLog(`Checking if ${app.appName} is installed...`);
+
+			app.installedUrl = null;
+			app.isInstalled = false;  // Assume the app is not installed.
+
+			for (let k = 0; Object.keys(app.appScriptVersions).length > k; k++) {
+				// For each of the app versions...
+				const appVersionUrl = app.appScriptVersions[Object.keys(app.appScriptVersions)[k]];
+				if (runningScripts.indexOf(appVersionUrl) > -1) {
+					app.installedUrl = appVersionUrl;
+					app.isInstalled = true;
+					break;
+				}
+			}
+			if (app.isInstalled) break;
+		}
+
+		return true;
 	}
 }
 
@@ -487,6 +519,7 @@ let apps = {
 		return true;
 	},
 	isAppAlreadyInstalled: (url) => {
+		apps.getInstalledApps();
 		return apps.installedApps.indexOf(url) > -1;
 	}
 }
