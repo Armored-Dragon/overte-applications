@@ -26,6 +26,8 @@ let app = {
 	}
 }
 addNotificationUIToInterface();
+subscribeToMessages();
+
 function addNotificationUIToInterface() {
 	// Generates the QML element(s) required to present the notifications to the screen
 	app._ui.overlay = new OverlayWindow({
@@ -43,17 +45,30 @@ function removeNotificationUIFromInterface() {
 	// After X seconds, force remove all interface elements
 }
 
+function subscribeToMessages() {
+	Messages.subscribe("overte.notification");
+}
+
+Messages.messageReceived.connect(receivedMessage);
+
 const notification = {
 	system: (title = "No title", description = "No further information.") => {
 		// Add the announcement to our history
+		// TODO
 
 		// Tell QML to render the announcement
+		sendMessageToQML({ type: "addSystemNotification", title, description });
+
+		// Play a sound
+		playSound.system();
 
 	},
 	connection: (text = "") => {
 		// Add the announcement to our history
+		// TODO
 
 		// Tell QML to render the announcement
+		// TODO
 	}
 }
 
@@ -67,6 +82,49 @@ const playSound = {
 	_playSound: (url) => {
 		const sound = SoundCache.getSound(url);
 		Audio.playSystemSound(sound, { volume: 0.5 });
+	}
+}
+
+let util = {
+	toJSON: (input) => {
+		if (!input) {
+			// Nothing.
+			return null;
+		}
+
+		if (typeof input === "object") {
+			// Already JSON.
+			return input;
+		}
+
+		try {
+			// Convert to JSON.
+			let inputJSON = JSON.parse(input);
+			return inputJSON;
+		}
+		catch (error) {
+			// Failed to convert to JSON, fail gracefully.
+			debugLog(`Error parsing ${input} to JSON.`);
+			debugLog(error);
+			return null;
+		}
+	}
+}
+
+function receivedMessage(channel, message) {
+	if (channel !== "overte.notification") return;
+
+	message = util.toJSON(message);
+	if (!message) return debugLog(`Failed to parse message to JSON.`);
+
+	if (message.type === "system") {
+		notification.system(message.title, message.description);
+		return;
+	}
+
+	if (message.type === "connection") {
+		// TODO
+		return;
 	}
 }
 
