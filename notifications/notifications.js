@@ -47,6 +47,7 @@ function removeNotificationUIFromInterface() {
 
 function subscribeToMessages() {
 	Messages.subscribe("overte.notification");
+	Messages.subscribe("Floof-Notif");
 }
 
 Messages.messageReceived.connect(receivedMessage);
