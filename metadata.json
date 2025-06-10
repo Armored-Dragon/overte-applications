@@ -15,7 +15,8 @@
 			"appAuthor": "Armored Dragon",
 			"appAgeMaturity": "EVERYONE",
 			"appCategory": "ENTERTAINMENT",
-			"appHomeUrl": null
+			"appHomeUrl": null,
+			"appActive": true
 		},
 		{
 			"appName": "More",
@@ -29,7 +30,8 @@
 			"appAuthor": "Armored Dragon",
 			"appAgeMaturity": "EVERYONE",
 			"appCategory": "UTILITY",
-			"appHomeUrl": null
+			"appHomeUrl": null,
+			"appActive": true
 		}
 	]
 }
