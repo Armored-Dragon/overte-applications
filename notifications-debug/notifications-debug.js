@@ -10,4 +10,53 @@
 //  See the accompanying file LICENSE or http://www.apache.org/licenses/LICENSE-2.0.html
 //
 
-Messages.sendLocalMessage("overte.notification", JSON.stringify({ type: "system", title: "Debug test", description: "Not a good one." }))
+
+const appSettings = {
+	name: "NOTIF",
+	icon: Script.resolvePath("./img/icon_white.svg")
+}
+
+Script.scriptEnding.connect(appShuttingDown);
+
+let app = {
+	toolbarAppButton: null,
+	tablet: null,
+	active: false,
+	add: () => {
+		app.tablet = Tablet.getTablet("com.highfidelity.interface.tablet.system");
+
+		addAppToToolbar();
+
+		// app.tablet.fromQml.connect(onMessageFromQML);
+	},
+	remove: () => {
+		// app.tablet.fromQml.disconnect(onMessageFromQML);
+		removeAppFromToolbar();
+	}
+}
+
+function addAppToToolbar() {
+	// Check if app is on toolbar
+
+	app.toolbarAppButton = app.tablet.addButton({
+		icon: appSettings.icon,
+		text: appSettings.name
+	});
+
+	app.toolbarAppButton.clicked.connect(toolbarButtonClicked);
+}
+function removeAppFromToolbar() {
+	if (app.toolbarAppButton) {
+		app.tablet.removeButton(app.toolbarAppButton);
+	}
+}
+
+function toolbarButtonClicked() {
+	Messages.sendLocalMessage("overte.notification", JSON.stringify({ type: "system", title: "Debug test", description: "Not a good one." }))
+}
+
+app.add();
+
+function appShuttingDown() {
+	app.remove();
+}
