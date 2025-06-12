@@ -141,8 +141,6 @@ function sendMessageToQML(message) {
 	app._ui.overlay.sendToQml(message);
 }
 
-sendMessageToQML({ type: "addSystemNotification", title: "This is a test" })
-
 
 function debugLog(content) {
 	if (typeof content === "object") content = JSON.stringify(content, null, 4);
