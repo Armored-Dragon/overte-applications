@@ -16,13 +16,22 @@
 // TODO: Bind notifications with system settings?
 // TODO: Timestamp notifications
 
+Script.include('./lib/utility.js');
+Script.include('./lib/io.js');
+Script.include('./lib/sound.js');
+
 let app = {
 	_config: {
 		enabled: true,				// Global enable / disable
-		maximumNotifications: 20
+		maximumSavedSystemNotifications: 20,
+		maximumSavedConnectionNotifications: 20,
 	},
 	_ui: {
 		overlay: null
+	},
+	_data: {
+		systemNotifications: [],
+		connectionNotifications: [],
 	}
 }
 addNotificationUIToInterface();
@@ -54,9 +63,6 @@ Messages.messageReceived.connect(receivedMessage);
 
 const notification = {
 	system: (title = "No title", description = "No further information.") => {
-		// Add the announcement to our history
-		// TODO
-
 		// Tell QML to render the announcement
 		sendMessageToQML({ type: "addSystemNotification", title, description });
 
@@ -65,58 +71,22 @@ const notification = {
 
 	},
 	connection: (text = "") => {
-		// Add the announcement to our history
-		// TODO
-
 		// Tell QML to render the announcement
 		// TODO
-	}
-}
 
-const playSound = {
-	system: () => {
-		playSound._playSound(Script.resolvePath("./sound/systemNotification.mp3"));
-	},
-	connection: () => {
-		playSound._playSound(Script.resolvePath("./sound/connectionNotification.mp3"));
-	},
-	_playSound: (url) => {
-		const sound = SoundCache.getSound(url);
-		Audio.playSystemSound(sound, { volume: 0.5 });
-	}
-}
-
-let util = {
-	toJSON: (input) => {
-		if (!input) {
-			// Nothing.
-			return null;
-		}
-
-		if (typeof input === "object") {
-			// Already JSON.
-			return input;
-		}
-
-		try {
-			// Convert to JSON.
-			let inputJSON = JSON.parse(input);
-			return inputJSON;
-		}
-		catch (error) {
-			// Failed to convert to JSON, fail gracefully.
-			debugLog(`Error parsing ${input} to JSON.`);
-			debugLog(error);
-			return null;
-		}
+		// Play a sound
+		// TODO: 
 	}
 }
 
 function receivedMessage(channel, message) {
+	// TODO: Generate and save UUID as ID for notification.
 	if (channel !== "overte.notification") return;
 
 	message = util.toJSON(message);
 	if (!message) return debugLog(`Failed to parse message to JSON.`);
+
+	io.saveNotification(message);
 
 	if (message.type === "system") {
 		notification.system(message.title, message.description);
@@ -140,7 +110,6 @@ function onMessageFromQML(event) {
 function sendMessageToQML(message) {
 	app._ui.overlay.sendToQml(message);
 }
-
 
 function debugLog(content) {
 	if (typeof content === "object") content = JSON.stringify(content, null, 4);
