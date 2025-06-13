@@ -27,7 +27,8 @@ let app = {
 		maximumSavedConnectionNotifications: 20,
 	},
 	_ui: {
-		overlay: null
+		overlay: null,
+		notificationPopout: null
 	},
 	_data: {
 		systemNotifications: [],
@@ -36,6 +37,7 @@ let app = {
 }
 addNotificationUIToInterface();
 subscribeToMessages();
+io.getNotifications();
 
 function addNotificationUIToInterface() {
 	// Generates the QML element(s) required to present the notifications to the screen
@@ -102,7 +104,13 @@ function receivedMessage(channel, message) {
 function onMessageFromQML(event) {
 	debugLog(event);
 	switch (event.type) {
-		case "addNewRepositoryButtonClicked":
+		case "openNotificationFromOverlay":
+			debugLog(app._ui.notificationPopout)
+			if (app._ui.notificationPopout === null) {
+				app._ui.notificationPopout = new OverlayWindow({ source: Script.resolvePath("./qml/PopoutWindow.qml"), title: "Notifications", width: 400, height: 600 });
+				app._ui.notificationPopout.sendToQml({ type: "notificationList", messages: [...app._data.connectionNotifications, ...app._data.systemNotifications] });
+				app._ui.notificationPopout.closed.connect(() => { app._ui.notificationPopout = null })
+			}
 			break;
 	}
 }

@@ -2,6 +2,10 @@ const SETTING_SYSTEM_NOTIFICATION = "overte.notification.system";
 const SETTING_CONNECTION_NOTIFICATION = "overte.notification.connection";
 
 const io = {
+	getNotifications: () => {
+		app._data.systemNotifications = Settings.getValue(SETTING_SYSTEM_NOTIFICATION, new Array());
+		app._data.connectionNotifications = Settings.getValue(SETTING_CONNECTION_NOTIFICATION, new Array());
+	},
 	saveNotification: (messageJSON) => {
 		if (messageJSON.type === "system") {
 			app._data.systemNotifications.push(messageJSON);

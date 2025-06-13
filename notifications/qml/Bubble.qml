@@ -53,7 +53,7 @@ Rectangle {
 		propagateComposedEvents: true;	
 
 		onPressed: {
-			toScript({type: "showDetails", bubbleDetails});
+			toScript({type: "openNotificationFromOverlay", bubbleDetails});
 		}
 
 		onEntered: {
