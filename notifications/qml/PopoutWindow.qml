@@ -36,6 +36,7 @@ Rectangle {
 					title: notificationList[index].title;
 					description: notificationList[index].description;
 					type: notificationList[index].type;
+					time: notificationList[index].timestamp;
 				}
 			}
 

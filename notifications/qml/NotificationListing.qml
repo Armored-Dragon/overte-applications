@@ -7,6 +7,7 @@ Rectangle {
 	property string title: "";
 	property string description: "";
 	property string type: "";
+	property string time: "";
 	property bool isOpen: false;
 
 	color: Qt.rgba(0,0,0,0.9);
@@ -44,14 +45,29 @@ Rectangle {
 			width: parent.width;
 			height: 200;
 
-			Text {
-				text: description;
-				font.pixelSize: 18;
-				color: colors.lightText1;
+			Column {
 				width: parent.width - 10;
 				height: parent.height - 10;
-				anchors.centerIn: parent;
+				spacing: 5;
+
+				Text {
+					text: time;
+					font.pixelSize: 18;
+					color: colors.lightText1;
+					width: parent.width;
+					wrapMode: Text.Wrap;
+					horizontalAlignment: Text.AlignRight;
+				}
+
+				Text {
+					text: description;
+					font.pixelSize: 18;
+					color: colors.lightText1;
+					width: parent.width;
+					wrapMode: Text.Wrap;
+				}
 			}
+
 
 			Behavior on height {
 				NumberAnimation {

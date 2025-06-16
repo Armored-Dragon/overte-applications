@@ -118,11 +118,27 @@ function sendNotificationListToNotificationPopout() {
 
 	let connectionNotificationsReversed = [...app._data.connectionNotifications];
 	connectionNotificationsReversed.reverse();
-
+	connectionNotificationsReversed.forEach((obj, index) => {
+		connectionNotificationsReversed[index] = notificationFormat(obj);
+	})
 
 	let systemNotificationsReversed = [...app._data.systemNotifications];
 	systemNotificationsReversed.reverse();
+	systemNotificationsReversed.forEach((obj, index) => {
+		systemNotificationsReversed[index] = notificationFormat(obj);
+	})
+
 	app._ui.notificationPopout.sendToQml({ type: "notificationList", messages: [...connectionNotificationsReversed, ...systemNotificationsReversed] });
+}
+
+function notificationFormat(notificationObject) {
+	// This formats a notification object to human readable data where needed.
+	// This modified data should not be saved anywhere, and should only be sent to the UI.
+	if (notificationObject.timestamp) {
+		notificationObject.timestamp = new Date(notificationObject.timestamp).toLocaleString();
+	}
+
+	return notificationObject;
 }
 
 function sendMessageToQML(message) {
