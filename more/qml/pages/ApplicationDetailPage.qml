@@ -8,6 +8,10 @@ Rectangle {
 	height: parent.height;
 	color: "transparent";
 
+	property var focusedApp: appList[focusedAppIndex];
+	property bool isAppInstalled: focusedAppIndex > -1 && focusedApp.isInstalled || false;
+	property string appInstalledUrl: focusedAppIndex > -1 && focusedApp.installedUrl || "";
+
 	Item {
 		visible: true;
 		width: parent.width - 10;
@@ -34,7 +38,7 @@ Rectangle {
 
 				AppImage {
 					imageSize: 100;
-					icon: appList[focusedAppIndex] && appList[focusedAppIndex].appIcon || "";
+					icon: focusedApp && focusedApp.appIcon || "";
 				}
 
 				Item {
@@ -46,17 +50,17 @@ Rectangle {
 					width: parent.width;
 
 					Text {
-						text: appList[focusedAppIndex] && appList[focusedAppIndex].appName || "";
+						text: focusedApp && focusedApp.appName || "";
 						color: "white";
 						font.pixelSize: 20;
 					}
 					Text {
-						text: appList[focusedAppIndex] && appList[focusedAppIndex].appCategory || "";
+						text: focusedApp && focusedApp.appCategory || "";
 						color: "gray";
 						font.pixelSize: 16;
 					}
 					Text {
-						text: appList[focusedAppIndex] && appList[focusedAppIndex].appAgeMaturity || "";
+						text: focusedApp && focusedApp.appAgeMaturity || "";
 						color: "gray";
 						font.pixelSize: 16;
 					}
@@ -66,28 +70,39 @@ Rectangle {
 			Row {
 				spacing: 10;
 				CustomButton {
+					visible: isAppInstalled === false;
 					buttonText: "Install";
 					buttonColor: colors.buttonSafe;
 					onClickedFunc: () => { appVersionsElement.visible = true; appDetailsElement.visible = false; }
 				}
 				CustomButton {
+					visible: isAppInstalled === true;
 					buttonText: "Remove";
 					buttonColor: colors.buttonDanger;
-					onClickedFunc: () => { uninstallApp(appList[focusedAppIndex].installedUrl) }
+					onClickedFunc: () => { uninstallApp(focusedApp.installedUrl) }
 				}
 				CustomButton {
 					buttonText: "View Repository";
 					buttonColor: colors.button;
-					onClickedFunc: () => { openAppRepository(appList[focusedAppIndex].appHomeUrl || appList[focusedAppIndex].repository.baseRepositoryUrl) }
+					onClickedFunc: () => { openAppRepository(focusedApp.appHomeUrl || focusedApp.repository.baseRepositoryUrl) }
 				}
 			}
 
-			Item {
+			Column {
 				width: parent.width;
 				height: 1;
 
 				Text {
-					text: appList[focusedAppIndex] && appList[focusedAppIndex].appDescription || "";
+					visible: isAppInstalled === true;
+					text: focusedApp && focusedApp.isInstalled ? "Installed:\n" + focusedApp.installedUrl + "\n" : "";
+					color: "gray";
+					font.pixelSize: 16;
+					wrapMode: Text.Wrap;
+					width: parent.width;
+				}
+
+				Text {
+					text: focusedApp && focusedApp.appDescription || "";
 					color: "gray";
 					font.pixelSize: 16;
 					wrapMode: Text.Wrap;
@@ -125,10 +140,10 @@ Rectangle {
 					height: parent.height;
 
 					Repeater {
-						model: Object.keys(appList[focusedAppIndex] && appList[focusedAppIndex].appScriptVersions || []).length;
+						model: Object.keys(focusedApp && focusedApp.appScriptVersions || []).length;
 						delegate: Rectangle {
-							property string appVersion: Object.keys(appList[focusedAppIndex].appScriptVersions)[index];
-							property string appUrl: appList[focusedAppIndex].appScriptVersions[Object.keys(appList[focusedAppIndex].appScriptVersions)[index]];
+							property string appVersion: Object.keys(focusedApp.appScriptVersions)[index];
+							property string appUrl: focusedApp.appScriptVersions[Object.keys(focusedApp.appScriptVersions)[index]];
 							width: parent.width;
 							height: 50;
 							color: colors.darkBackground2;
@@ -155,7 +170,7 @@ Rectangle {
 								propagateComposedEvents: true;	
 
 								onPressed: {
-									installApp(appList[focusedAppIndex], appVersion)
+									installApp(focusedApp, appVersion)
 								}
 
 								onEntered: {
@@ -175,7 +190,7 @@ Rectangle {
 
 	function getVersionsCount() {
 		// print(Object.keys(appVersions))
-		return Object.keys(appList[focusedAppIndex].appVersions).length;
+		return Object.keys(focusedApp.appVersions).length;
 	}
 	function getVersionInformation(index) {
 		return {
