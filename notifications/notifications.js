@@ -11,12 +11,6 @@
 //  See the accompanying file LICENSE or http://www.apache.org/licenses/LICENSE-2.0.html
 //
 
-// TODO: Bind notifications with system settings?
-// TODO: Erase all notifications
-// TODO: Notifications settings
-// TODO: Timestamp notifications
-// TODO: Play sound explicitly by the notification render request, not always and automatically. 
-
 Script.include('./lib/utility.js');
 Script.include('./lib/io.js');
 Script.include('./lib/sound.js');
