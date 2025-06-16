@@ -32,6 +32,20 @@
 			"appCategory": "UTILITY",
 			"appHomeUrl": null,
 			"appActive": true
+		},
+		{
+			"appName": "Notifications",
+			"appBaseDirectory": "notifications",
+			"appScriptVersions": {
+				"stable": "notifications.js"
+			},
+			"appIcon": "img/icon_white.png",
+			"appDescription": "A basic notification system for Overte",
+			"appAuthor": "Armored Dragon",
+			"appAgeMaturity": "EVERYONE",
+			"appCategory": "UTILITY",
+			"appHomeUrl": null,
+			"appActive": true
 		}
 	]
 }
