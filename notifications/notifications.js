@@ -11,10 +11,9 @@
 //  See the accompanying file LICENSE or http://www.apache.org/licenses/LICENSE-2.0.html
 //
 
-// TODO: Keep history of notifications
-// TODO: Focus on notifications (Click / hover?)
 // TODO: Bind notifications with system settings?
 // TODO: Timestamp notifications
+// TODO: Play sound explicitly by the notification render request, not always and automatically. 
 
 Script.include('./lib/utility.js');
 Script.include('./lib/io.js');
@@ -48,14 +47,6 @@ function addNotificationUIToInterface() {
 	app._ui.overlay.fromQml.connect(onMessageFromQML);
 }
 
-function removeNotificationUIFromInterface() {
-	// Removes all QML elements from the screen
-
-	// Smoothly force remove all active notifications (trigger fade out immediately)
-
-	// After X seconds, force remove all interface elements
-}
-
 function subscribeToMessages() {
 	Messages.subscribe("overte.notification");
 	Messages.subscribe("Floof-Notif");
@@ -64,15 +55,19 @@ function subscribeToMessages() {
 Messages.messageReceived.connect(receivedMessage);
 
 const notification = {
-	system: (title = "No title", description = "No further information.") => {
+	system: (title = "No title", description = "No further information.", sound = false) => {
 		// Tell QML to render the announcement
 		sendMessageToQML({ type: "addSystemNotification", title, description });
 
+		// If the notification window is open, add that notification to the list.
+		sendNotificationListToNotificationPopout();
+
 		// Play a sound
-		playSound.system();
+		if (sound) playSound.system();
 
 	},
 	connection: (text = "") => {
+		// Once we have connections implemented, finish this.
 		// Tell QML to render the announcement
 		// TODO
 
@@ -105,14 +100,25 @@ function onMessageFromQML(event) {
 	debugLog(event);
 	switch (event.type) {
 		case "openNotificationFromOverlay":
-			debugLog(app._ui.notificationPopout)
 			if (app._ui.notificationPopout === null) {
 				app._ui.notificationPopout = new OverlayWindow({ source: Script.resolvePath("./qml/PopoutWindow.qml"), title: "Notifications", width: 400, height: 600 });
-				app._ui.notificationPopout.sendToQml({ type: "notificationList", messages: [...app._data.connectionNotifications, ...app._data.systemNotifications] });
-				app._ui.notificationPopout.closed.connect(() => { app._ui.notificationPopout = null })
+				app._ui.notificationPopout.closed.connect(() => { app._ui.notificationPopout = null });
+				sendNotificationListToNotificationPopout();
 			}
 			break;
 	}
+}
+
+function sendNotificationListToNotificationPopout() {
+	if (app._ui.notificationPopout === null) return debugLog(`Notification window is not open. Not sending a message.`);
+
+	let connectionNotificationsReversed = [...app._data.connectionNotifications];
+	connectionNotificationsReversed.reverse();
+
+
+	let systemNotificationsReversed = [...app._data.systemNotifications];
+	systemNotificationsReversed.reverse();
+	app._ui.notificationPopout.sendToQml({ type: "notificationList", messages: [...connectionNotificationsReversed, ...systemNotificationsReversed] });
 }
 
 function sendMessageToQML(message) {

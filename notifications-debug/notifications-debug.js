@@ -26,7 +26,6 @@ let app = {
 		app.tablet = Tablet.getTablet("com.highfidelity.interface.tablet.system");
 
 		addAppToToolbar();
-
 		// app.tablet.fromQml.connect(onMessageFromQML);
 	},
 	remove: () => {
@@ -37,7 +36,6 @@ let app = {
 
 function addAppToToolbar() {
 	// Check if app is on toolbar
-
 	app.toolbarAppButton = app.tablet.addButton({
 		icon: appSettings.icon,
 		text: appSettings.name
@@ -52,7 +50,7 @@ function removeAppFromToolbar() {
 }
 
 function toolbarButtonClicked() {
-	Messages.sendLocalMessage("overte.notification", JSON.stringify({ type: "system", title: "Debug test", description: "Not a good one." }))
+	Messages.sendLocalMessage("overte.notification", JSON.stringify({ type: "system", title: `Debug ${Uuid.generate()}`, description: "Not a good one." }))
 }
 
 app.add();
