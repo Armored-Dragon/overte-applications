@@ -12,6 +12,8 @@
 //
 
 // TODO: Bind notifications with system settings?
+// TODO: Erase all notifications
+// TODO: Notifications settings
 // TODO: Timestamp notifications
 // TODO: Play sound explicitly by the notification render request, not always and automatically. 
 
@@ -83,6 +85,8 @@ function receivedMessage(channel, message) {
 	message = util.toJSON(message);
 	if (!message) return debugLog(`Failed to parse message to JSON.`);
 
+	message.id = Uuid.generate();
+	message.timestamp = Date.now();
 	io.saveNotification(message);
 
 	if (message.type === "system") {
